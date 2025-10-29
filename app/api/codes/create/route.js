@@ -26,14 +26,31 @@ export async function POST(request) {
       RETURNING *
     `;
 
-    // ✅ إرجاع الكود بشكل صحيح
+    // استخراج الكود بطرق مختلفة حسب شكل النتيجة
+    let createdCode;
+    
+    if (Array.isArray(result) && result.length > 0) {
+      createdCode = result[0];
+    } else if (result.rows && result.rows.length > 0) {
+      createdCode = result.rows[0];
+    } else if (result.command === 'INSERT') {
+      // إذا كانت النتيجة من نوع Result object
+      createdCode = result.rows?.[0] || result;
+    } else {
+      createdCode = result;
+    }
+
+    // إضافة activation_code إذا لم يكن موجود
+    if (!createdCode.activation_code && activationCode) {
+      createdCode.activation_code = activationCode;
+    }
+
     return NextResponse.json({ 
       success: true, 
-      code: result[0]
+      code: createdCode
     });
   } catch (error) {
     console.error('Create code error:', error);
-    // ✅ إضافة success: false في الخطأ
     return NextResponse.json({ 
       success: false,
       error: error.message 
