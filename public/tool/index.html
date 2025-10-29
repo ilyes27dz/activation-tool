@@ -546,309 +546,319 @@
         </div>
     </div>
 
-    <script>
-        let allCodes = [];
+<script>
+    let allCodes = [];
 
-        // Load data on startup
-        async function loadData() {
-            try {
-                const response = await fetch('/api/admin/codes');
-                const data = await response.json();
-                
-                if (data.success) {
-                    allCodes = data.codes;
-                    updateStats();
-                    renderList();
-                }
-            } catch (error) {
-                console.error('Load error:', error);
-            }
-        }
+    // Load data on startup
+    async function loadData() {
+        try {
+            const response = await fetch('/api/admin/codes');
+            const data = await response.json();
 
-        // Update statistics
-        function updateStats() {
-            const total = allCodes.length;
-            const trial = allCodes.filter(c => c.type === 'trial' && c.status === 'active').length;
-            const full = allCodes.filter(c => c.type === 'full' && c.status === 'active').length;
-            const active = allCodes.filter(c => c.online_status === 'online').length;
-
-            document.getElementById('statTotal').textContent = total;
-            document.getElementById('statTrial').textContent = trial;
-            document.getElementById('statFull').textContent = full;
-            document.getElementById('statActive').textContent = active;
-        }
-
-        // Generate Full Code
-        async function generateFullCode() {
-            const clientName = document.getElementById('clientName').value.trim();
-            const clientPhone = document.getElementById('clientPhone').value.trim();
-            const machineId = document.getElementById('machineId').value.trim();
-            const notes = document.getElementById('notes').value.trim();
-
-            if (!clientName || !clientPhone || !machineId) {
-                alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
-                return;
+            // تصحيح استخراج الأكواد من الـ API مهما كان شكلها
+            if (data.success && Array.isArray(data.codes)) {
+                allCodes = data.codes;
+            } else if (data.codes && Array.isArray(data.codes.rows)) {
+                allCodes = data.codes.rows;
+            } else {
+                allCodes = [];
             }
 
-            try {
-                const response = await fetch('/api/codes/create', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        clientName,
-                        clientPhone,
-                        machineId,
-                        type: 'full',
-                        notes
-                    })
-                });
+            updateStats();
+            renderList();
+        } catch (error) {
+            console.error('Load error:', error);
+            allCodes = [];
+            renderList();
+        }
+    }
 
-                const data = await response.json();
-                
-                if (data.success) {
-                    document.getElementById('resultCode').textContent = data.code.activation_code;
-                    document.getElementById('resultLabel').textContent = `✅ كود كامل (دائم) - ${clientName}`;
-                    document.getElementById('resultBox').classList.add('show');
-                    
-                    clearForm();
-                    await loadData();
-                } else {
-                    alert('❌ خطأ: ' + data.error);
-                }
-            } catch (error) {
-                alert('❌ خطأ في الاتصال بالخادم');
-            }
+    // Update statistics
+    function updateStats() {
+        const total = allCodes.length;
+        const trial = allCodes.filter(c => c.type === 'trial' && c.status === 'active').length;
+        const full = allCodes.filter(c => c.type === 'full' && c.status === 'active').length;
+        const active = allCodes.filter(c => c.online_status === 'online').length;
+
+        document.getElementById('statTotal').textContent = total;
+        document.getElementById('statTrial').textContent = trial;
+        document.getElementById('statFull').textContent = full;
+        document.getElementById('statActive').textContent = active;
+    }
+
+    // Generate Full Code
+    async function generateFullCode() {
+        const clientName = document.getElementById('clientName').value.trim();
+        const clientPhone = document.getElementById('clientPhone').value.trim();
+        const machineId = document.getElementById('machineId').value.trim();
+        const notes = document.getElementById('notes').value.trim();
+
+        if (!clientName || !clientPhone || !machineId) {
+            alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
+            return;
         }
 
-        // Generate Trial Code
-        async function generateTrialCode(days) {
-            const clientName = document.getElementById('clientName').value.trim();
-            const clientPhone = document.getElementById('clientPhone').value.trim();
-            const machineId = document.getElementById('machineId').value.trim();
-            const notes = document.getElementById('notes').value.trim();
-
-            if (!clientName || !clientPhone || !machineId) {
-                alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/codes/create', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        clientName,
-                        clientPhone,
-                        machineId,
-                        type: 'trial',
-                        trialDays: days,
-                        notes
-                    })
-                });
-
-                const data = await response.json();
-                
-                if (data.success) {
-                    document.getElementById('resultCode').textContent = data.code.activation_code;
-                    document.getElementById('resultLabel').textContent = `✅ كود تجريبي (${days} أيام) - ${clientName}`;
-                    document.getElementById('resultBox').classList.add('show');
-                    
-                    clearForm();
-                    await loadData();
-                } else {
-                    alert('❌ خطأ: ' + data.error);
-                }
-            } catch (error) {
-                alert('❌ خطأ في الاتصال بالخادم');
-            }
-        }
-
-        // Clear form
-        function clearForm() {
-            document.getElementById('clientName').value = '';
-            document.getElementById('clientPhone').value = '';
-            document.getElementById('machineId').value = '';
-            document.getElementById('notes').value = '';
-        }
-
-        // Copy code
-        function copyCode() {
-            const code = document.getElementById('resultCode').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                alert(`✅ تم نسخ الكود!\n\n${code}`);
+        try {
+            const response = await fetch('/api/codes/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    clientName,
+                    clientPhone,
+                    machineId,
+                    type: 'full',
+                    notes
+                })
             });
+
+            const data = await response.json();
+
+            if (data.success) {
+                document.getElementById('resultCode').textContent = data.code.activation_code;
+                document.getElementById('resultLabel').textContent = `✅ كود كامل (دائم) - ${clientName}`;
+                document.getElementById('resultBox').classList.add('show');
+
+                clearForm();
+                await loadData();
+            } else {
+                alert('❌ خطأ: ' + data.error);
+            }
+        } catch (error) {
+            alert('❌ خطأ في الاتصال بالخادم');
+        }
+    }
+
+    // Generate Trial Code
+    async function generateTrialCode(days) {
+        const clientName = document.getElementById('clientName').value.trim();
+        const clientPhone = document.getElementById('clientPhone').value.trim();
+        const machineId = document.getElementById('machineId').value.trim();
+        const notes = document.getElementById('notes').value.trim();
+
+        if (!clientName || !clientPhone || !machineId) {
+            alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
+            return;
         }
 
-        // Render list
-        function renderList() {
-            const container = document.getElementById('listContainer');
-            
-            if (allCodes.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        📭 لا توجد تفعيلات بعد<br>
-                        قم بتوليد أول كود للبدء!
-                    </div>
-                `;
-                return;
+        try {
+            const response = await fetch('/api/codes/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    clientName,
+                    clientPhone,
+                    machineId,
+                    type: 'trial',
+                    trialDays: days,
+                    notes
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                document.getElementById('resultCode').textContent = data.code.activation_code;
+                document.getElementById('resultLabel').textContent = `✅ كود تجريبي (${days} أيام) - ${clientName}`;
+                document.getElementById('resultBox').classList.add('show');
+
+                clearForm();
+                await loadData();
+            } else {
+                alert('❌ خطأ: ' + data.error);
             }
+        } catch (error) {
+            alert('❌ خطأ في الاتصال بالخادم');
+        }
+    }
 
-            container.innerHTML = allCodes.map(code => {
-                const statusBadge = code.status === 'active' 
-                    ? `<span class="badge badge-active">نشط</span>` 
-                    : `<span class="badge badge-inactive">موقوف</span>`;
-                
-                const onlineBadge = code.online_status === 'online'
-                    ? `<span class="badge badge-online">🟢 متصل الآن</span>`
-                    : code.online_status === 'offline'
-                    ? `<span class="badge badge-offline">🟠 غير متصل</span>`
-                    : '';
+    // Clear form
+    function clearForm() {
+        document.getElementById('clientName').value = '';
+        document.getElementById('clientPhone').value = '';
+        document.getElementById('machineId').value = '';
+        document.getElementById('notes').value = '';
+    }
 
-                const typeBadge = code.type === 'full' 
-                    ? `<span class="badge badge-full">💎 كامل</span>`
-                    : `<span class="badge badge-trial">⏰ ${code.trial_days} أيام</span>`;
+    // Copy code
+    function copyCode() {
+        const code = document.getElementById('resultCode').textContent;
+        navigator.clipboard.writeText(code).then(() => {
+            alert(`✅ تم نسخ الكود!\n\n${code}`);
+        });
+    }
 
-                return `
-                    <div class="list-item" data-search="${code.client_name.toLowerCase()} ${code.client_phone} ${code.machine_id}">
-                        <div class="item-header">
-                            <div class="item-name">${code.client_name}</div>
-                            <div style="display: flex; gap: 5px;">
-                                ${typeBadge}
-                                ${statusBadge}
-                                ${onlineBadge}
-                            </div>
-                        </div>
-                        <div class="item-details">
-                            📱 ${code.client_phone}<br>
-                            🖥️ ${code.machine_id} ${code.computer_name ? `(${code.computer_name})` : ''}<br>
-                            📅 ${new Date(code.created_at).toLocaleString('ar-DZ')}
-                            ${code.last_seen ? `<br>🕐 آخر نشاط: ${new Date(code.last_seen).toLocaleString('ar-DZ')}` : ''}
-                            ${code.notes ? `<br>📝 ${code.notes}` : ''}
-                        </div>
-                        <div class="item-code">${code.activation_code}</div>
-                        <div class="item-actions">
-                            <button class="btn btn-small btn-info" onclick="copyText('${code.activation_code}')">📋 نسخ</button>
-                            ${code.status === 'active' 
-                                ? `<button class="btn btn-small btn-warning" onclick="deactivateCode(${code.id})">🔒 إيقاف</button>`
-                                : `<button class="btn btn-small btn-success" onclick="reactivateCode(${code.id})">🔓 تفعيل</button>`
-                            }
-                            <button class="btn btn-small btn-danger" onclick="deleteCode(${code.id})">🗑️ حذف</button>
+    // Render list
+    function renderList() {
+        const container = document.getElementById('listContainer');
+
+        if (allCodes.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    📭 لا توجد تفعيلات بعد<br>
+                    قم بتوليد أول كود للبدء!
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = allCodes.map(code => {
+            const statusBadge = code.status === 'active' 
+                ? `<span class="badge badge-active">نشط</span>` 
+                : `<span class="badge badge-inactive">موقوف</span>`;
+            
+            const onlineBadge = code.online_status === 'online'
+                ? `<span class="badge badge-online">🟢 متصل الآن</span>`
+                : code.online_status === 'offline'
+                ? `<span class="badge badge-offline">🟠 غير متصل</span>`
+                : '';
+
+            const typeBadge = code.type === 'full' 
+                ? `<span class="badge badge-full">💎 كامل</span>`
+                : `<span class="badge badge-trial">⏰ ${code.trial_days} أيام</span>`;
+
+            return `
+                <div class="list-item" data-search="${code.client_name.toLowerCase()} ${code.client_phone} ${code.machine_id}">
+                    <div class="item-header">
+                        <div class="item-name">${code.client_name}</div>
+                        <div style="display: flex; gap: 5px;">
+                            ${typeBadge}
+                            ${statusBadge}
+                            ${onlineBadge}
                         </div>
                     </div>
-                `;
-            }).join('');
-        }
+                    <div class="item-details">
+                        📱 ${code.client_phone}<br>
+                        🖥️ ${code.machine_id} ${code.computer_name ? `(${code.computer_name})` : ''}<br>
+                        📅 ${new Date(code.created_at).toLocaleString('ar-DZ')}
+                        ${code.last_seen ? `<br>🕐 آخر نشاط: ${new Date(code.last_seen).toLocaleString('ar-DZ')}` : ''}
+                        ${code.notes ? `<br>📝 ${code.notes}` : ''}
+                    </div>
+                    <div class="item-code">${code.activation_code}</div>
+                    <div class="item-actions">
+                        <button class="btn btn-small btn-info" onclick="copyText('${code.activation_code}')">📋 نسخ</button>
+                        ${code.status === 'active' 
+                            ? `<button class="btn btn-small btn-warning" onclick="deactivateCode(${code.id})">🔒 إيقاف</button>`
+                            : `<button class="btn btn-small btn-success" onclick="reactivateCode(${code.id})">🔓 تفعيل</button>`
+                        }
+                        <button class="btn btn-small btn-danger" onclick="deleteCode(${code.id})">🗑️ حذف</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
 
-        // Copy text
-        function copyText(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                alert(`✅ تم النسخ!\n\n${text}`);
+    // Copy text
+    function copyText(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert(`✅ تم النسخ!\n\n${text}`);
+        });
+    }
+
+    // Deactivate code
+    async function deactivateCode(id) {
+        if (!confirm('⚠️ هل تريد إيقاف هذا التفعيل؟\n\nسيتم إيقاف البرنامج على جهاز العميل!')) return;
+
+        try {
+            await fetch('/api/admin/codes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'deactivate', id, admin: 'Admin' })
             });
+
+            alert('✅ تم إيقاف التفعيل!');
+            await loadData();
+        } catch (error) {
+            alert('❌ خطأ في الإيقاف');
         }
+    }
 
-        // Deactivate code
-        async function deactivateCode(id) {
-            if (!confirm('⚠️ هل تريد إيقاف هذا التفعيل؟\n\nسيتم إيقاف البرنامج على جهاز العميل!')) return;
+    // Reactivate code
+    async function reactivateCode(id) {
+        if (!confirm('هل تريد إعادة تفعيل هذا الكود؟')) return;
 
-            try {
-                await fetch('/api/admin/codes', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'deactivate', id, admin: 'Admin' })
-                });
-
-                alert('✅ تم إيقاف التفعيل!');
-                await loadData();
-            } catch (error) {
-                alert('❌ خطأ في الإيقاف');
-            }
-        }
-
-        // Reactivate code
-        async function reactivateCode(id) {
-            if (!confirm('هل تريد إعادة تفعيل هذا الكود؟')) return;
-
-            try {
-                await fetch('/api/admin/codes', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'reactivate', id, admin: 'Admin' })
-                });
-
-                alert('✅ تم إعادة التفعيل!');
-                await loadData();
-            } catch (error) {
-                alert('❌ خطأ في التفعيل');
-            }
-        }
-
-        // Delete code
-        async function deleteCode(id) {
-            if (!confirm('⚠️ هل تريد حذف هذا الكود نهائياً؟')) return;
-
-            try {
-                await fetch(`/api/codes/delete?id=${id}`, { method: 'DELETE' });
-                alert('✅ تم الحذف!');
-                await loadData();
-            } catch (error) {
-                alert('❌ خطأ في الحذف');
-            }
-        }
-
-        // Filter list
-        function filterList() {
-            const search = document.getElementById('searchInput').value.toLowerCase();
-            const items = document.querySelectorAll('.list-item');
-            
-            items.forEach(item => {
-                const searchData = item.getAttribute('data-search');
-                item.style.display = searchData.includes(search) ? 'block' : 'none';
+        try {
+            await fetch('/api/admin/codes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'reactivate', id, admin: 'Admin' })
             });
+
+            alert('✅ تم إعادة التفعيل!');
+            await loadData();
+        } catch (error) {
+            alert('❌ خطأ في التفعيل');
+        }
+    }
+
+    // Delete code
+    async function deleteCode(id) {
+        if (!confirm('⚠️ هل تريد حذف هذا الكود نهائياً؟')) return;
+
+        try {
+            await fetch(`/api/codes/delete?id=${id}`, { method: 'DELETE' });
+            alert('✅ تم الحذف!');
+            await loadData();
+        } catch (error) {
+            alert('❌ خطأ في الحذف');
+        }
+    }
+
+    // Filter list
+    function filterList() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const items = document.querySelectorAll('.list-item');
+        
+        items.forEach(item => {
+            const searchData = item.getAttribute('data-search');
+            item.style.display = searchData.includes(search) ? 'block' : 'none';
+        });
+    }
+
+    // Export CSV
+    function exportCSV() {
+        if (allCodes.length === 0) {
+            alert('⚠️ لا توجد بيانات للتصدير!');
+            return;
         }
 
-        // Export CSV
-        function exportCSV() {
-            if (allCodes.length === 0) {
-                alert('⚠️ لا توجد بيانات للتصدير!');
-                return;
-            }
+        const csv = [
+            ['الاسم', 'الهاتف', 'Machine ID', 'النوع', 'الكود', 'الحالة', 'التاريخ', 'آخر نشاط'].join(','),
+            ...allCodes.map(c => [
+                c.client_name,
+                c.client_phone,
+                c.machine_id,
+                c.type === 'full' ? 'كامل' : `تجريبي ${c.trial_days} أيام`,
+                c.activation_code,
+                c.status === 'active' ? 'نشط' : 'موقوف',
+                new Date(c.created_at).toLocaleDateString('ar-DZ'),
+                c.last_seen ? new Date(c.last_seen).toLocaleString('ar-DZ') : '-'
+            ].join(','))
+        ].join('\n');
 
-            const csv = [
-                ['الاسم', 'الهاتف', 'Machine ID', 'النوع', 'الكود', 'الحالة', 'التاريخ', 'آخر نشاط'].join(','),
-                ...allCodes.map(c => [
-                    c.client_name,
-                    c.client_phone,
-                    c.machine_id,
-                    c.type === 'full' ? 'كامل' : `تجريبي ${c.trial_days} أيام`,
-                    c.activation_code,
-                    c.status === 'active' ? 'نشط' : 'موقوف',
-                    new Date(c.created_at).toLocaleDateString('ar-DZ'),
-                    c.last_seen ? new Date(c.last_seen).toLocaleString('ar-DZ') : '-'
-                ].join(','))
-            ].join('\n');
+        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `activations_${new Date().toISOString().split('T')[0]}.csv`;
+        link.click();
 
-            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `activations_${new Date().toISOString().split('T')[0]}.csv`;
-            link.click();
+        alert('✅ تم التصدير!');
+    }
 
-            alert('✅ تم التصدير!');
+    // Logout
+    function logout() {
+        if (confirm('هل تريد تسجيل الخروج؟')) {
+            localStorage.removeItem('isAuthenticated');
+            window.location.href = '/login';
         }
+    }
 
-        // Logout
-        function logout() {
-            if (confirm('هل تريد تسجيل الخروج؟')) {
-                localStorage.removeItem('isAuthenticated');
-                window.location.href = '/login';
-            }
-        }
+    // Auto refresh every 30 seconds
+    setInterval(loadData, 30000);
 
-        // Auto refresh every 30 seconds
-        setInterval(loadData, 30000);
+    // Load on start
+    loadData();
+</script>
 
-        // Load on start
-        loadData();
-    </script>
+    
 </body>
 </html>
