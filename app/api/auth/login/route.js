@@ -6,6 +6,7 @@ export async function POST(request) {
   try {
     const { username, password } = await request.json();
 
+    // البحث عن المستخدم
     const result = await query(
       'SELECT * FROM users WHERE username = $1',
       [username]
@@ -19,6 +20,8 @@ export async function POST(request) {
     }
 
     const user = result.rows[0];
+    
+    // التحقق من كلمة المرور
     const isValid = await bcrypt.compare(password, user.password_hash);
 
     if (!isValid) {
@@ -28,7 +31,13 @@ export async function POST(request) {
       );
     }
 
-    return NextResponse.json({ success: true, user: { id: user.id, username: user.username } });
+    return NextResponse.json({ 
+      success: true, 
+      user: { 
+        id: user.id, 
+        username: user.username 
+      } 
+    });
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json(

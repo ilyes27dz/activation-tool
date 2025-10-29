@@ -12,15 +12,26 @@ export async function GET(request) {
       queryText += ' WHERE is_used = true';
     } else if (filter === 'unused') {
       queryText += ' WHERE is_used = false';
+    } else if (filter === 'trial') {
+      queryText += " WHERE type = 'trial'";
+    } else if (filter === 'full') {
+      queryText += " WHERE type = 'full'";
     }
     
     queryText += ' ORDER BY created_at DESC';
 
     const result = await query(queryText);
 
-    return NextResponse.json({ codes: result.rows });
+    return NextResponse.json({ 
+      success: true,
+      codes: result.rows,
+      count: result.rows.length
+    });
   } catch (error) {
     console.error('List codes error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 }

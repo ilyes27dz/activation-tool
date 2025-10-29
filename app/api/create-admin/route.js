@@ -4,17 +4,21 @@ import { query } from '@/lib/db';
 
 export async function GET() {
   try {
-    // التحقق من وجود مستخدم
-    const checkResult = await query('SELECT * FROM users WHERE username = $1', ['admin']);
+    // التحقق من وجود مستخدم admin
+    const checkResult = await query(
+      'SELECT * FROM users WHERE username = $1',
+      ['admin']
+    );
 
     if (checkResult.rows.length > 0) {
       return NextResponse.json({
         success: false,
         message: 'Admin user already exists',
+        note: 'Use existing credentials to login'
       });
     }
 
-    // إنشاء المستخدم
+    // إنشاء المستخدم الجديد
     const password = 'admin123';
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -25,10 +29,11 @@ export async function GET() {
 
     return NextResponse.json({
       success: true,
-      message: 'Admin user created',
+      message: 'Admin user created successfully',
       credentials: {
         username: 'admin',
         password: 'admin123',
+        note: 'Please change this password after first login'
       },
     });
   } catch (error) {
