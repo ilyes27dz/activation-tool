@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 function generateCode(type, machineId) {
   const prefix = type === 'trial' ? 'TRIAL' : 'FULL';
   const random = Math.random().toString(36).substring(2, 10).toUpperCase();
@@ -24,7 +26,7 @@ export async function POST(request) {
       RETURNING *
     `;
 
-    return NextResponse.json({ success: true, code: result.rows[0] });
+    return NextResponse.json({ success: true, code: result[0] });
   } catch (error) {
     console.error('Create code error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });

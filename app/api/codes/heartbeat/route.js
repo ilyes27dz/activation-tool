@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request) {
   try {
     const { activationCode, machineId, computerName } = await request.json();
@@ -8,7 +10,7 @@ export async function POST(request) {
     await sql`
       UPDATE activation_codes
       SET last_seen = NOW(),
-          computer_name = ${computerName || machine_id}
+          computer_name = ${computerName || machineId}
       WHERE activation_code = ${activationCode}
       AND machine_id = ${machineId}
     `;
