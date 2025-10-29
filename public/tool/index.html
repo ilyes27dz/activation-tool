@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>أداة توليد أكواد التفعيل - HANOUTY DZ</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .main-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            background: linear-gradient(135deg, #FF9800 0%, #FF6F00 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 45px;
+            color: white;
+            box-shadow: 0 10px 25px rgba(255, 152, 0, 0.5);
+        }
+        h1 {
+            color: #FFD54F;
+            font-size: 24px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #B0BEC5;
+            font-size: 14px;
+        }
+        
+        /* Container Grid */
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        @media (min-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (min-width: 1200px) {
+            .grid-container {
+                grid-template-columns: 500px 1fr;
+            }
+        }
+        
+        /* Cards */
+        .card {
+            background: rgba(18, 30, 40, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 8px 32px rgba(255, 152, 0, 0.3);
+            border: 2px solid rgba(255, 152, 0, 0.3);
+        }
+        
+        .card-title {
+            color: #FFD54F;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        /* Info Box */
+        .info-box {
+            background: rgba(33, 150, 243, 0.1);
+            border: 2px solid rgba(33, 150, 243, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            color: #B0BEC5;
+            line-height: 1.6;
+        }
+        
+        /* Form */
+        .input-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            color: #FFD54F;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            font-size: 14px;
+            border: 2px solid rgba(255, 152, 0, 0.4);
+            border-radius: 8px;
+            background: rgba(255, 152, 0, 0.08);
+            color: #FFD54F;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #FF9800;
+            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.2);
+        }
+        textarea {
+            resize: vertical;
+            min-height: 60px;
+            font-family: 'Segoe UI', sans-serif;
+        }
+        
+        /* Buttons */
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-generate {
+            background: #FF9800;
+            color: white;
+            grid-column: 1 / -1;
+        }
+        .btn-generate:hover {
+            background: #FB8C00;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.5);
+        }
+        .btn-trial {
+            background: #4CAF50;
+            color: white;
+        }
+        .btn-trial:hover {
+            background: #43A047;
+            transform: translateY(-2px);
+        }
+        
+        /* Result */
+        .result {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(76, 175, 80, 0.12);
+            border: 2px solid rgba(76, 175, 80, 0.4);
+            border-radius: 12px;
+            animation: slideIn 0.4s ease;
+        }
+        .result.show { display: block; }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .result-label {
+            color: #4CAF50;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .code-output {
+            background: rgba(255, 193, 7, 0.15);
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: 900;
+            color: #FFC107;
+            text-align: center;
+            word-break: break-all;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+        .copy-btn {
+            width: 100%;
+            background: #2196F3;
+            color: white;
+            padding: 12px;
+        }
+        .copy-btn:hover {
+            background: #1976D2;
+        }
+        
+        /* History */
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+        }
+        .search-box input {
+            padding: 10px;
+            font-size: 13px;
+        }
+        .export-btn {
+            background: #9C27B0;
+            color: white;
+            padding: 10px 15px;
+            font-size: 13px;
+        }
+        .export-btn:hover {
+            background: #7B1FA2;
+        }
+        
+        .history-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .history-item {
+            background: rgba(255, 152, 0, 0.08);
+            border: 1px solid rgba(255, 152, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+        .history-item:hover {
+            background: rgba(255, 152, 0, 0.15);
+            transform: translateX(-5px);
+        }
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .history-client-name {
+            color: #FFD54F;
+            font-size: 15px;
+            font-weight: 700;
+        }
+        .history-type {
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .type-full {
+            background: #FF9800;
+            color: white;
+        }
+        .type-trial {
+            background: #4CAF50;
+            color: white;
+        }
+        .history-details {
+            color: #B0BEC5;
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+        .history-code {
+            background: rgba(33, 150, 243, 0.15);
+            padding: 8px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #64B5F6;
+            word-break: break-all;
+            margin-bottom: 8px;
+        }
+        .history-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 11px;
+            border-radius: 6px;
+        }
+        .btn-copy-history {
+            background: #2196F3;
+            color: white;
+        }
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+        
+        .empty-history {
+            text-align: center;
+            color: #78909C;
+            padding: 40px 20px;
+            font-size: 14px;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            color: #78909C;
+            font-size: 12px;
+            margin-top: 30px;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 152, 0, 0.1);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 152, 0, 0.5);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 152, 0, 0.7);
+        }
+        
+        /* Mobile Optimization */
+        @media (max-width: 600px) {
+            body { padding: 10px; }
+            .card { padding: 15px; }
+            h1 { font-size: 20px; }
+            .button-group { grid-template-columns: 1fr; }
+            .code-output { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="main-header">
+        <div class="logo">🛒</div>
+        <h1>أداة توليد أكواد التفعيل</h1>
+        <div class="subtitle">HANOUTY DZ - نسخة 2.0 مع Historique</div>
+    </div>
+
+    <!-- Grid Container -->
+    <div class="grid-container">
+        <!-- Left: Generator Card -->
+        <div class="card">
+            <div class="card-title">🔑 توليد كود جديد</div>
+            
+            <div class="info-box">
+                <strong>💡 كيف تستخدم:</strong><br>
+                1️⃣ أدخل بيانات الزبون<br>
+                2️⃣ اختر نوع الكود (كامل أو تجريبي)<br>
+                3️⃣ انسخ الكود وأرسله عبر WhatsApp
+            </div>
+
+            <!-- Form -->
+            <div class="input-group">
+                <label for="clientName">👤 اسم الزبون *</label>
+                <input type="text" id="clientName" placeholder="مثال: محمد أحمد">
+            </div>
+
+            <div class="input-group">
+                <label for="clientPhone">📱 رقم الهاتف *</label>
+                <input type="text" id="clientPhone" placeholder="مثال: 0774366470">
+            </div>
+
+            <div class="input-group">
+                <label for="machineId">🖥️ رقم الجهاز (Machine ID) *</label>
+                <input type="text" id="machineId" placeholder="مثال: 1234567890">
+            </div>
+
+            <div class="input-group">
+                <label for="notes">📝 ملاحظات (اختياري)</label>
+                <textarea id="notes" placeholder="أي معلومات إضافية..."></textarea>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-group">
+                <button class="btn-generate" onclick="generateFullCode()">
+                    💎 كود كامل (دائم)
+                </button>
+                <button class="btn-trial" onclick="generateTrialCode(5)">⏰ 5 أيام</button>
+                <button class="btn-trial" onclick="generateTrialCode(7)">⏰ 7 أيام</button>
+                <button class="btn-trial" onclick="generateTrialCode(10)">⏰ 10 أيام</button>
+                <button class="btn-trial" onclick="generateTrialCode(30)">⏰ 30 يوم</button>
+            </div>
+
+            <!-- Result -->
+            <div class="result" id="result">
+                <div class="result-label" id="resultLabel">✅ تم التوليد بنجاح!</div>
+                <div class="code-output" id="codeOutput"></div>
+                <button class="copy-btn" onclick="copyCode()">📋 نسخ الكود</button>
+            </div>
+        </div>
+
+        <!-- Right: History Card -->
+        <div class="card">
+            <div class="history-header">
+                <div class="card-title">📚 سجل الأكواد</div>
+                <div class="search-box">
+                    <input type="text" id="searchHistory" placeholder="🔍 بحث..." onkeyup="filterHistory()">
+                </div>
+                <button class="export-btn" onclick="exportHistory()">📥 تصدير</button>
+            </div>
+
+            <div class="history-list" id="historyList">
+                <div class="empty-history">
+                    📭 لا توجد أكواد بعد<br>
+                    قم بتوليد أول كود للبدء!
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        © 2025 HANOUTY DZ - أداة خاصة للمطور فقط | لا تشارك هذه الأداة مع أحد!
+    </div>
+
+    <script>
+        // ✅ Load History from localStorage
+        let activationHistory = JSON.parse(localStorage.getItem('activationHistory') || '[]');
+
+        // ✅ توليد كود النسخة الكاملة
+        async function generateActivationKey(machineId) {
+            const SECRET_KEY = "HANOUTY_DZ_2025_SECRET_KEY_DO_NOT_SHARE";
+            const combined = `${machineId}-${SECRET_KEY}`;
+            
+            const encoder = new TextEncoder();
+            const data = encoder.encode(combined);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            const activationCode = hashHex.substring(0, 16).toUpperCase();
+            
+            return `HK-${activationCode.substring(0, 4)}-${activationCode.substring(4, 8)}-${activationCode.substring(8, 12)}-${activationCode.substring(12, 16)}`;
+        }
+
+        async function generateFullCode() {
+            const clientName = document.getElementById('clientName').value.trim();
+            const clientPhone = document.getElementById('clientPhone').value.trim();
+            const machineId = document.getElementById('machineId').value.trim();
+            const notes = document.getElementById('notes').value.trim();
+            
+            if (!clientName || !clientPhone || !machineId) {
+                alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
+                return;
+            }
+            
+            const code = await generateActivationKey(machineId);
+            const now = new Date();
+            
+            // Save to history
+            const historyItem = {
+                id: Date.now(),
+                clientName,
+                clientPhone,
+                machineId,
+                notes,
+                code,
+                type: 'full',
+                typeName: 'كامل (دائم)',
+                date: now.toLocaleString('ar-DZ'),
+                expiryDate: null
+            };
+            
+            activationHistory.unshift(historyItem);
+            localStorage.setItem('activationHistory', JSON.stringify(activationHistory));
+            
+            // Show result
+            document.getElementById('codeOutput').textContent = code;
+            document.getElementById('resultLabel').textContent = `✅ كود كامل (دائم) - ${clientName}`;
+            document.getElementById('result').classList.add('show');
+            
+            // Refresh history
+            renderHistory();
+            
+            // Clear form
+            clearForm();
+        }
+
+        // ✅ توليد كود تجريبي
+        async function generateTrialCode(days) {
+            const clientName = document.getElementById('clientName').value.trim();
+            const clientPhone = document.getElementById('clientPhone').value.trim();
+            const machineId = document.getElementById('machineId').value.trim();
+            const notes = document.getElementById('notes').value.trim();
+            
+            if (!clientName || !clientPhone || !machineId) {
+                alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
+                return;
+            }
+            
+            const SECRET_KEY = "TRIAL_KEY_2025_HANOUTY";
+            const combined = `${machineId}-${days}-${SECRET_KEY}`;
+            
+            const encoder = new TextEncoder();
+            const data = encoder.encode(combined);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            const trialCode = hashHex.substring(0, 12).toUpperCase();
+            
+            const code = `HT-${days}D-${trialCode.substring(0, 4)}-${trialCode.substring(4, 8)}-${trialCode.substring(8, 12)}`;
+            
+            const now = new Date();
+            const expiryDate = new Date(now.getTime() + (days * 24 * 60 * 60 * 1000));
+            
+            // Save to history
+            const historyItem = {
+                id: Date.now(),
+                clientName,
+                clientPhone,
+                machineId,
+                notes,
+                code,
+                type: 'trial',
+                typeName: `تجريبي (${days} أيام)`,
+                date: now.toLocaleString('ar-DZ'),
+                expiryDate: expiryDate.toLocaleDateString('ar-DZ')
+            };
+            
+            activationHistory.unshift(historyItem);
+            localStorage.setItem('activationHistory', JSON.stringify(activationHistory));
+            
+            // Show result
+            document.getElementById('codeOutput').textContent = code;
+            document.getElementById('resultLabel').textContent = `✅ كود تجريبي (${days} أيام) - ${clientName}`;
+            document.getElementById('result').classList.add('show');
+            
+            // Refresh history
+            renderHistory();
+            
+            // Clear form
+            clearForm();
+        }
+
+        function clearForm() {
+            document.getElementById('clientName').value = '';
+            document.getElementById('clientPhone').value = '';
+            document.getElementById('machineId').value = '';
+            document.getElementById('notes').value = '';
+        }
+
+        function copyCode() {
+            const code = document.getElementById('codeOutput').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert(`✅ تم نسخ الكود بنجاح!\n\n${code}`);
+            });
+        }
+
+        // ✅ Render History
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            
+            if (activationHistory.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-history">
+                        📭 لا توجد أكواد بعد<br>
+                        قم بتوليد أول كود للبدء!
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = activationHistory.map(item => `
+                <div class="history-item" data-search="${item.clientName.toLowerCase()} ${item.clientPhone} ${item.machineId}">
+                    <div class="history-item-header">
+                        <div class="history-client-name">${item.clientName}</div>
+                        <div class="history-type ${item.type === 'full' ? 'type-full' : 'type-trial'}">
+                            ${item.typeName}
+                        </div>
+                    </div>
+                    <div class="history-details">
+                        📱 ${item.clientPhone}<br>
+                        🖥️ ${item.machineId}<br>
+                        📅 ${item.date}
+                        ${item.expiryDate ? `<br>⏰ ينتهي: ${item.expiryDate}` : ''}
+                        ${item.notes ? `<br>📝 ${item.notes}` : ''}
+                    </div>
+                    <div class="history-code">${item.code}</div>
+                    <div class="history-actions">
+                        <button class="btn-small btn-copy-history" onclick="copyHistoryCode('${item.code}')">📋 نسخ</button>
+                        <button class="btn-small btn-delete" onclick="deleteHistoryItem(${item.id})">🗑️ حذف</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function copyHistoryCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                alert(`✅ تم نسخ الكود!\n\n${code}`);
+            });
+        }
+
+        function deleteHistoryItem(id) {
+            if (!confirm('⚠️ هل أنت متأكد من حذف هذا الكود؟')) return;
+            
+            activationHistory = activationHistory.filter(item => item.id !== id);
+            localStorage.setItem('activationHistory', JSON.stringify(activationHistory));
+            renderHistory();
+        }
+
+        function filterHistory() {
+            const search = document.getElementById('searchHistory').value.toLowerCase();
+            const items = document.querySelectorAll('.history-item');
+            
+            items.forEach(item => {
+                const searchData = item.getAttribute('data-search');
+                item.style.display = searchData.includes(search) ? 'block' : 'none';
+            });
+        }
+
+        function exportHistory() {
+            if (activationHistory.length === 0) {
+                alert('⚠️ لا توجد بيانات للتصدير!');
+                return;
+            }
+            
+            const csv = [
+                ['الاسم', 'الهاتف', 'Machine ID', 'النوع', 'الكود', 'التاريخ', 'الانتهاء', 'ملاحظات'].join(','),
+                ...activationHistory.map(item => [
+                    item.clientName,
+                    item.clientPhone,
+                    item.machineId,
+                    item.typeName,
+                    item.code,
+                    item.date,
+                    item.expiryDate || '-',
+                    item.notes || '-'
+                ].join(','))
+            ].join('\n');
+            
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `activation_history_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            alert('✅ تم تصدير السجل بنجاح!');
+        }
+
+        // ✅ Initialize
+        renderHistory();
+    </script>
+</body>
+</html>
