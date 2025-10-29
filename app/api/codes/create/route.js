@@ -26,9 +26,17 @@ export async function POST(request) {
       RETURNING *
     `;
 
-    return NextResponse.json({ success: true, code: result[0] });
+    // ✅ إرجاع الكود بشكل صحيح
+    return NextResponse.json({ 
+      success: true, 
+      code: result[0]
+    });
   } catch (error) {
     console.error('Create code error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    // ✅ إضافة success: false في الخطأ
+    return NextResponse.json({ 
+      success: false,
+      error: error.message 
+    }, { status: 500 });
   }
 }
