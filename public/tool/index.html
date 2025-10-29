@@ -586,47 +586,54 @@
         document.getElementById('statActive').textContent = active;
     }
 
-    // Generate Full Code
-    async function generateFullCode() {
-        const clientName = document.getElementById('clientName').value.trim();
-        const clientPhone = document.getElementById('clientPhone').value.trim();
-        const machineId = document.getElementById('machineId').value.trim();
-        const notes = document.getElementById('notes').value.trim();
+  async function generateFullCode() {
+    const clientName = document.getElementById('clientName').value.trim();
+    const clientPhone = document.getElementById('clientPhone').value.trim();
+    const machineId = document.getElementById('machineId').value.trim();
+    const notes = document.getElementById('notes').value.trim();
 
-        if (!clientName || !clientPhone || !machineId) {
-            alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
+    if (!clientName || !clientPhone || !machineId) {
+        alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/codes/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                clientName,
+                clientPhone,
+                machineId,
+                type: 'full',
+                notes
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            alert('❌ خطأ في الخادم: ' + (data.error || response.statusText));
             return;
         }
 
-        try {
-            const response = await fetch('/api/codes/create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    clientName,
-                    clientPhone,
-                    machineId,
-                    type: 'full',
-                    notes
-                })
-            });
+        if (data.success && data.code && data.code.activation_code) {
+            document.getElementById('resultCode').textContent = data.code.activation_code;
+            document.getElementById('resultLabel').textContent = `✅ كود كامل (دائم) - ${clientName}`;
+            document.getElementById('resultBox').classList.add('show');
 
-            const data = await response.json();
-
-            if (data.success) {
-                document.getElementById('resultCode').textContent = data.code.activation_code;
-                document.getElementById('resultLabel').textContent = `✅ كود كامل (دائم) - ${clientName}`;
-                document.getElementById('resultBox').classList.add('show');
-
-                clearForm();
-                await loadData();
-            } else {
-                alert('❌ خطأ: ' + data.error);
-            }
-        } catch (error) {
-            alert('❌ خطأ في الاتصال بالخادم');
+            clearForm();
+            await loadData();
+        } else {
+            alert('❌ خطأ: الكود لم يُنشأ بشكل صحيح');
+            console.error('Response data:', data);
         }
+    } catch (error) {
+        console.error('Full error:', error);
+        alert('❌ خطأ في الاتصال: ' + error.message);
     }
+}
+
 
     // Generate Trial Code
     async function generateTrialCode(days) {
@@ -654,18 +661,22 @@
                 })
             });
 
-            const data = await response.json();
+          const data = await response.json();
 
-            if (data.success) {
-                document.getElementById('resultCode').textContent = data.code.activation_code;
-                document.getElementById('resultLabel').textContent = `✅ كود تجريبي (${days} أيام) - ${clientName}`;
-                document.getElementById('resultBox').classList.add('show');
+console.log('Response:', data); // للتشخيص
 
-                clearForm();
-                await loadData();
-            } else {
-                alert('❌ خطأ: ' + data.error);
-            }
+if (data.success && data.code && data.code.activation_code) {
+    document.getElementById('resultCode').textContent = data.code.activation_code;
+document.getElementById('resultLabel').textContent = `✅ كود تجريبي (${days} أيام) - ${clientName}`;
+    document.getElementById('resultBox').classList.add('show');
+    
+    clearForm();
+    await loadData();
+} else {
+    alert('❌ خطأ: ' + (data.error || 'لم يتم إرجاع الكود بشكل صحيح'));
+    console.error('Data received:', data);
+}
+
         } catch (error) {
             alert('❌ خطأ في الاتصال بالخادم');
         }
