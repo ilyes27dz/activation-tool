@@ -15,11 +15,14 @@ export async function POST(request) {
       });
     }
 
-    const codes = await sql`
+    const result = await sql`
       SELECT * FROM activation_codes 
       WHERE activation_code = ${activationCode.toUpperCase()}
       LIMIT 1
     `;
+
+    // استخراج الأكواد بطريقة صحيحة
+    const codes = Array.isArray(result) ? result : (result.rows || []);
 
     if (codes.length === 0) {
       return NextResponse.json({ 
@@ -31,7 +34,7 @@ export async function POST(request) {
 
     const code = codes[0];
 
-    // ✅ التحقق من حالة التفعيل (status)
+    // التحقق من حالة التفعيل (status)
     if (code.status === 'deactivated') {
       return NextResponse.json({ 
         success: true,
@@ -60,7 +63,7 @@ export async function POST(request) {
       }
     }
 
-    // ✅ تحديث حالة الاستخدام + آخر نشاط
+    // تحديث حالة الاستخدام + آخر نشاط
     if (!code.is_used) {
       await sql`
         UPDATE activation_codes 
@@ -71,7 +74,7 @@ export async function POST(request) {
         WHERE id = ${code.id}
       `;
     } else {
-      // ✅ تحديث آخر نشاط فقط
+      // تحديث آخر نشاط فقط
       await sql`
         UPDATE activation_codes 
         SET last_seen = NOW()
@@ -92,7 +95,7 @@ export async function POST(request) {
     return NextResponse.json({ 
       success: false, 
       valid: false,
-      message: 'خطأ في الخادم' 
-    });
+      message: 'خطأ في الخادم: ' + error.message 
+    }, { status: 500 });
   }
 }
