@@ -13,18 +13,18 @@ export async function GET() {
         client_name,
         client_phone,
         machine_id,
-        computer_name,
+        COALESCE(computer_name, '') as computer_name,
         type,
-        trial_days,
-        is_used,
+        COALESCE(trial_days, 0) as trial_days,
+        COALESCE(is_used, false) as is_used,
         created_at,
         used_at,
         expiry_date,
-        status,
+        COALESCE(status, 'active') as status,
         last_seen,
         deactivated_at,
         deactivated_by,
-        notes,
+        COALESCE(notes, '') as notes,
         CASE 
           WHEN last_seen > NOW() - INTERVAL '5 minutes' THEN 'online'
           WHEN last_seen IS NOT NULL THEN 'offline'
@@ -36,11 +36,16 @@ export async function GET() {
 
     return NextResponse.json({ success: true, codes });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error('Admin codes error:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: error.message,
+      codes: []
+    }, { status: 500 });
   }
 }
 
-// Deactivate a code
+// Deactivate/Reactivate a code
 export async function POST(request) {
   try {
     const { action, id, admin } = await request.json();
@@ -50,7 +55,7 @@ export async function POST(request) {
         UPDATE activation_codes
         SET status = 'deactivated',
             deactivated_at = NOW(),
-            deactivated_by = ${admin}
+            deactivated_by = ${admin || 'Admin'}
         WHERE id = ${id}
       `;
 
@@ -71,6 +76,10 @@ export async function POST(request) {
 
     return NextResponse.json({ success: false, error: 'Invalid action' }, { status: 400 });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error('Admin action error:', error);
+    return NextResponse.json({ 
+      success: false, 
+      error: error.message 
+    }, { status: 500 });
   }
 }
