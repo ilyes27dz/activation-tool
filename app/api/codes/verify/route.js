@@ -1,7 +1,5 @@
 import { NextResponse } from 'next/server';
-import { neon } from '@neondatabase/serverless';
-
-const sql = neon(process.env.DATABASE_URL);
+import { sql } from '@/lib/db';
 
 export async function POST(request) {
   try {
@@ -31,6 +29,16 @@ export async function POST(request) {
 
     const code = codes[0];
 
+    // ✅ التحقق من حالة التفعيل (status)
+    if (code.status === 'deactivated') {
+      return NextResponse.json({ 
+        success: true,
+        valid: false,
+        deactivated: true,
+        message: 'تم إيقاف هذا التفعيل من قبل المطور' 
+      });
+    }
+
     if (code.is_used && code.machine_id !== machineId) {
       return NextResponse.json({ 
         success: true,
@@ -50,12 +58,21 @@ export async function POST(request) {
       }
     }
 
+    // ✅ تحديث حالة الاستخدام + آخر نشاط
     if (!code.is_used) {
       await sql`
         UPDATE activation_codes 
         SET is_used = true, 
             machine_id = ${machineId},
-            used_at = NOW()
+            used_at = NOW(),
+            last_seen = NOW()
+        WHERE id = ${code.id}
+      `;
+    } else {
+      // ✅ تحديث آخر نشاط فقط
+      await sql`
+        UPDATE activation_codes 
+        SET last_seen = NOW()
         WHERE id = ${code.id}
       `;
     }

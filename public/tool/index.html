@@ -3,173 +3,261 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أداة توليد أكواد التفعيل - HANOUTY DZ</title>
+    <title>لوحة التحكم - HANOUTY DZ</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
         
-        .main-header {
-            text-align: center;
-            margin-bottom: 30px;
+        body {
+            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
         }
-        .logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 15px;
-            background: linear-gradient(135deg, #FF9800 0%, #FF6F00 100%);
-            border-radius: 20px;
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #FF6B35 0%, #E55A2B 100%);
+            color: white;
+            padding: 15px 30px;
+            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-box {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 45px;
-            color: white;
-            box-shadow: 0 10px 25px rgba(255, 152, 0, 0.5);
+            font-size: 28px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        h1 {
-            color: #FFD54F;
-            font-size: 24px;
+
+        .header-title h1 {
+            font-size: 20px;
             font-weight: 900;
-            margin-bottom: 8px;
+            margin-bottom: 3px;
         }
-        .subtitle {
-            color: #B0BEC5;
+
+        .header-title p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-logout {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .btn-logout:hover {
+            background: white;
+            color: #FF6B35;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            max-width: 1400px;
+            margin: 30px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-top: 4px solid;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+
+        .stat-card.total { border-color: #FF6B35; }
+        .stat-card.trial { border-color: #4CAF50; }
+        .stat-card.full { border-color: #2196F3; }
+        .stat-card.active { border-color: #9C27B0; }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon {
+            font-size: 32px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 900;
+            color: #333;
+        }
+
+        .stat-label {
+            color: #666;
             font-size: 14px;
+            font-weight: 600;
         }
-        
-        .grid-container {
+
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px;
-            max-width: 1400px;
-            margin: 0 auto;
         }
-        
-        @media (min-width: 768px) {
-            .grid-container {
-                grid-template-columns: 1fr 1fr;
+
+        @media (min-width: 1024px) {
+            .main-content {
+                grid-template-columns: 450px 1fr;
             }
         }
-        
-        @media (min-width: 1200px) {
-            .grid-container {
-                grid-template-columns: 500px 1fr;
-            }
-        }
-        
+
         .card {
-            background: rgba(18, 30, 40, 0.95);
-            border-radius: 15px;
+            background: white;
+            border-radius: 12px;
             padding: 25px;
-            box-shadow: 0 8px 32px rgba(255, 152, 0, 0.3);
-            border: 2px solid rgba(255, 152, 0, 0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-        
+
         .card-title {
-            color: #FFD54F;
             font-size: 18px;
-            font-weight: 700;
+            font-weight: 900;
+            color: #FF6B35;
             margin-bottom: 20px;
             display: flex;
             align-items: center;
             gap: 10px;
         }
-        
-        .info-box {
-            background: rgba(33, 150, 243, 0.1);
-            border: 2px solid rgba(33, 150, 243, 0.3);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            color: #B0BEC5;
-            line-height: 1.6;
-        }
-        
-        .input-group {
+
+        /* Form */
+        .form-group {
             margin-bottom: 15px;
         }
-        label {
+
+        .form-label {
             display: block;
-            color: #FFD54F;
+            color: #333;
             font-size: 13px;
             font-weight: 700;
             margin-bottom: 8px;
         }
-        input, textarea {
+
+        .form-input {
             width: 100%;
             padding: 12px;
-            font-size: 14px;
-            border: 2px solid rgba(255, 152, 0, 0.4);
+            border: 2px solid #e0e0e0;
             border-radius: 8px;
-            background: rgba(255, 152, 0, 0.08);
-            color: #FFD54F;
-            font-family: 'Courier New', monospace;
-            font-weight: 600;
-        }
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #FF9800;
-            box-shadow: 0 0 0 3px rgba(255, 152, 0, 0.2);
-        }
-        textarea {
-            resize: vertical;
-            min-height: 60px;
-            font-family: 'Segoe UI', sans-serif;
-        }
-        
-        .button-group {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        button {
-            padding: 12px;
             font-size: 14px;
-            font-weight: 700;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #FF6B35;
+            box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+        }
+
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 14px;
             border: none;
             border-radius: 8px;
+            font-weight: 700;
+            font-size: 14px;
             cursor: pointer;
             transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .btn-generate {
-            background: #FF9800;
+
+        .btn-primary {
+            background: #FF6B35;
             color: white;
-            grid-column: 1 / -1;
         }
-        .btn-generate:hover {
-            background: #FB8C00;
+
+        .btn-primary:hover {
+            background: #E55A2B;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.5);
+            box-shadow: 0 6px 16px rgba(255, 107, 53, 0.4);
         }
-        .btn-trial {
+
+        .btn-success {
             background: #4CAF50;
             color: white;
         }
-        .btn-trial:hover {
+
+        .btn-success:hover {
             background: #43A047;
-            transform: translateY(-2px);
         }
-        
-        .result {
+
+        .btn-small-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        /* Result Box */
+        .result-box {
             display: none;
             margin-top: 20px;
             padding: 20px;
-            background: rgba(76, 175, 80, 0.12);
-            border: 2px solid rgba(76, 175, 80, 0.4);
+            background: rgba(76, 175, 80, 0.1);
+            border: 2px solid #4CAF50;
             border-radius: 12px;
-            animation: slideIn 0.4s ease;
+            animation: slideIn 0.3s ease;
         }
-        .result.show { display: block; }
+
+        .result-box.show { display: block; }
+
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(20px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+
         .result-label {
             color: #4CAF50;
             font-size: 14px;
@@ -177,30 +265,32 @@
             margin-bottom: 12px;
             text-align: center;
         }
-        .code-output {
+
+        .result-code {
             background: rgba(255, 193, 7, 0.15);
             padding: 15px;
-            border-radius: 10px;
+            border-radius: 8px;
             font-family: 'Courier New', monospace;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 900;
-            color: #FFC107;
+            color: #FF6B35;
             text-align: center;
             word-break: break-all;
             margin-bottom: 12px;
-            letter-spacing: 1px;
         }
-        .copy-btn {
+
+        .btn-copy {
             width: 100%;
             background: #2196F3;
             color: white;
-            padding: 12px;
         }
-        .copy-btn:hover {
+
+        .btn-copy:hover {
             background: #1976D2;
         }
-        
-        .history-header {
+
+        /* List */
+        .list-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -208,251 +298,293 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-        .search-box {
+
+        .search-input {
             flex: 1;
             min-width: 200px;
-        }
-        .search-box input {
             padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
             font-size: 13px;
         }
-        .export-btn {
+
+        .search-input:focus {
+            outline: none;
+            border-color: #FF6B35;
+        }
+
+        .btn-export {
             background: #9C27B0;
             color: white;
-            padding: 10px 15px;
+            padding: 10px 16px;
             font-size: 13px;
         }
-        .export-btn:hover {
+
+        .btn-export:hover {
             background: #7B1FA2;
         }
-        
-        .history-list {
-            max-height: 500px;
+
+        .list-container {
+            max-height: 600px;
             overflow-y: auto;
         }
-        .history-item {
-            background: rgba(255, 152, 0, 0.08);
-            border: 1px solid rgba(255, 152, 0, 0.3);
+
+        .list-item {
+            background: #fafafa;
+            border: 2px solid #f0f0f0;
             border-radius: 10px;
-            padding: 15px;
+            padding: 16px;
             margin-bottom: 12px;
             transition: all 0.3s;
         }
-        .history-item:hover {
-            background: rgba(255, 152, 0, 0.15);
+
+        .list-item:hover {
+            background: #fff;
+            border-color: #FF6B35;
             transform: translateX(-5px);
         }
-        .history-item-header {
+
+        .item-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             margin-bottom: 10px;
-            flex-wrap: wrap;
-            gap: 10px;
         }
-        .history-client-name {
-            color: #FFD54F;
+
+        .item-name {
             font-size: 15px;
-            font-weight: 700;
+            font-weight: 900;
+            color: #FF6B35;
         }
-        .history-type {
+
+        .badge {
             padding: 4px 12px;
             border-radius: 6px;
             font-size: 11px;
             font-weight: 700;
-        }
-        .type-full {
-            background: #FF9800;
             color: white;
         }
-        .type-trial {
-            background: #4CAF50;
-            color: white;
+
+        .badge-full { background: #2196F3; }
+        .badge-trial { background: #4CAF50; }
+        .badge-active { background: #9C27B0; }
+        .badge-inactive { background: #757575; }
+        .badge-online { background: #4CAF50; animation: pulse 2s infinite; }
+        .badge-offline { background: #FF9800; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
         }
-        .history-details {
-            color: #B0BEC5;
+
+        .item-details {
+            color: #666;
             font-size: 12px;
-            line-height: 1.6;
-            margin-bottom: 8px;
+            line-height: 1.8;
+            margin-bottom: 10px;
         }
-        .history-code {
-            background: rgba(33, 150, 243, 0.15);
+
+        .item-code {
+            background: rgba(33, 150, 243, 0.1);
             padding: 8px;
             border-radius: 6px;
             font-family: 'Courier New', monospace;
-            font-size: 13px;
-            color: #64B5F6;
+            font-size: 12px;
+            color: #2196F3;
             word-break: break-all;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
-        .history-actions {
+
+        .item-actions {
             display: flex;
             gap: 8px;
+            flex-wrap: wrap;
         }
+
         .btn-small {
             padding: 6px 12px;
             font-size: 11px;
             border-radius: 6px;
         }
-        .btn-copy-history {
-            background: #2196F3;
-            color: white;
-        }
-        .btn-delete {
-            background: #f44336;
-            color: white;
-        }
-        
-        .empty-history {
+
+        .btn-info { background: #2196F3; color: white; }
+        .btn-danger { background: #f44336; color: white; }
+        .btn-warning { background: #FF9800; color: white; }
+
+        .empty-state {
             text-align: center;
-            color: #78909C;
-            padding: 40px 20px;
+            color: #999;
+            padding: 60px 20px;
             font-size: 14px;
         }
-        
-        .footer {
-            text-align: center;
-            color: #78909C;
-            font-size: 12px;
-            margin-top: 30px;
-        }
-        
+
         ::-webkit-scrollbar {
             width: 8px;
         }
+
         ::-webkit-scrollbar-track {
-            background: rgba(255, 152, 0, 0.1);
+            background: #f0f0f0;
             border-radius: 10px;
         }
+
         ::-webkit-scrollbar-thumb {
-            background: rgba(255, 152, 0, 0.5);
+            background: #FF6B35;
             border-radius: 10px;
         }
+
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(255, 152, 0, 0.7);
-        }
-        
-        @media (max-width: 600px) {
-            body { padding: 10px; }
-            .card { padding: 15px; }
-            h1 { font-size: 20px; }
-            .button-group { grid-template-columns: 1fr; }
-            .code-output { font-size: 14px; }
+            background: #E55A2B;
         }
     </style>
 </head>
 <body>
-    <div class="main-header">
-        <div class="logo">🛒</div>
-        <h1>أداة توليد أكواد التفعيل</h1>
-        <div class="subtitle">HANOUTY DZ - نسخة احترافية مع API</div>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <div class="logo-box">🛒</div>
+            <div class="header-title">
+                <h1>HANOUTY DZ</h1>
+                <p>لوحة التحكم - إدارة التفعيلات</p>
+            </div>
+        </div>
+        <div class="header-right">
+            <button class="btn-logout" onclick="logout()">🚪 تسجيل الخروج</button>
+        </div>
     </div>
 
-    <div class="grid-container">
+    <!-- Stats -->
+    <div class="stats-container">
+        <div class="stat-card total">
+            <div class="stat-header">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="statTotal">0</div>
+            </div>
+            <div class="stat-label">إجمالي الأكواد</div>
+        </div>
+        <div class="stat-card trial">
+            <div class="stat-header">
+                <div class="stat-icon">⏰</div>
+                <div class="stat-value" id="statTrial">0</div>
+            </div>
+            <div class="stat-label">تجريبية</div>
+        </div>
+        <div class="stat-card full">
+            <div class="stat-header">
+                <div class="stat-icon">💎</div>
+                <div class="stat-value" id="statFull">0</div>
+            </div>
+            <div class="stat-label">كاملة</div>
+        </div>
+        <div class="stat-card active">
+            <div class="stat-header">
+                <div class="stat-icon">🟢</div>
+                <div class="stat-value" id="statActive">0</div>
+            </div>
+            <div class="stat-label">نشطة الآن</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Generate Form -->
         <div class="card">
             <div class="card-title">🔑 توليد كود جديد</div>
             
-            <div class="info-box">
-                <strong>💡 كيف تستخدم:</strong><br>
-                1️⃣ أدخل بيانات الزبون<br>
-                2️⃣ اختر نوع الكود (كامل أو تجريبي)<br>
-                3️⃣ انسخ الكود وأرسله عبر WhatsApp
+            <div class="form-group">
+                <label class="form-label">👤 اسم الزبون</label>
+                <input type="text" class="form-input" id="clientName" placeholder="محمد أحمد">
             </div>
 
-            <div class="input-group">
-                <label for="clientName">👤 اسم الزبون *</label>
-                <input type="text" id="clientName" placeholder="مثال: محمد أحمد">
+            <div class="form-group">
+                <label class="form-label">📱 رقم الهاتف</label>
+                <input type="text" class="form-input" id="clientPhone" placeholder="0774366470">
             </div>
 
-            <div class="input-group">
-                <label for="clientPhone">📱 رقم الهاتف *</label>
-                <input type="text" id="clientPhone" placeholder="مثال: 0774366470">
+            <div class="form-group">
+                <label class="form-label">🖥️ رقم الجهاز (Machine ID)</label>
+                <input type="text" class="form-input" id="machineId" placeholder="1234567890">
             </div>
 
-            <div class="input-group">
-                <label for="machineId">🖥️ رقم الجهاز (Machine ID) *</label>
-                <input type="text" id="machineId" placeholder="مثال: 1234567890">
+            <div class="form-group">
+                <label class="form-label">📝 ملاحظات (اختياري)</label>
+                <textarea class="form-input" id="notes" rows="2" placeholder="أي معلومات إضافية..."></textarea>
             </div>
 
-            <div class="input-group">
-                <label for="notes">📝 ملاحظات (اختياري)</label>
-                <textarea id="notes" placeholder="أي معلومات إضافية..."></textarea>
-            </div>
-
-            <div class="button-group">
-                <button class="btn-generate" onclick="generateFullCode()">
+            <div class="btn-grid">
+                <button class="btn btn-primary" onclick="generateFullCode()">
                     💎 كود كامل (دائم)
                 </button>
-                <button class="btn-trial" onclick="generateTrialCode(5)">⏰ 5 أيام</button>
-                <button class="btn-trial" onclick="generateTrialCode(7)">⏰ 7 أيام</button>
-                <button class="btn-trial" onclick="generateTrialCode(10)">⏰ 10 أيام</button>
-                <button class="btn-trial" onclick="generateTrialCode(30)">⏰ 30 يوم</button>
+                <div class="btn-small-grid">
+                    <button class="btn btn-success" onclick="generateTrialCode(5)">⏰ 5 أيام</button>
+                    <button class="btn btn-success" onclick="generateTrialCode(7)">⏰ 7 أيام</button>
+                    <button class="btn btn-success" onclick="generateTrialCode(10)">⏰ 10 أيام</button>
+                    <button class="btn btn-success" onclick="generateTrialCode(30)">⏰ 30 يوم</button>
+                </div>
             </div>
 
-            <div class="result" id="result">
+            <div class="result-box" id="resultBox">
                 <div class="result-label" id="resultLabel">✅ تم التوليد بنجاح!</div>
-                <div class="code-output" id="codeOutput"></div>
-                <button class="copy-btn" onclick="copyCode()">📋 نسخ الكود</button>
+                <div class="result-code" id="resultCode"></div>
+                <button class="btn btn-copy" onclick="copyCode()">📋 نسخ الكود</button>
             </div>
         </div>
 
+        <!-- List -->
         <div class="card">
-            <div class="history-header">
-                <div class="card-title">📚 سجل الأكواد</div>
-                <div class="search-box">
-                    <input type="text" id="searchHistory" placeholder="🔍 بحث..." onkeyup="filterHistory()">
-                </div>
-                <button class="export-btn" onclick="exportHistory()">📥 تصدير CSV</button>
+            <div class="list-header">
+                <div class="card-title">📚 سجل التفعيلات</div>
+                <input type="text" class="search-input" id="searchInput" placeholder="🔍 بحث..." onkeyup="filterList()">
+                <button class="btn btn-export" onclick="exportCSV()">📥 تصدير</button>
             </div>
 
-            <div class="history-list" id="historyList">
-                <div class="empty-history">
-                    📭 لا توجد أكواد بعد<br>
+            <div class="list-container" id="listContainer">
+                <div class="empty-state">
+                    📭 لا توجد تفعيلات بعد<br>
                     قم بتوليد أول كود للبدء!
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="footer">
-        © 2025 HANOUTY DZ - أداة خاصة للمطور | محفوظة في قاعدة البيانات
-    </div>
-
     <script>
-        let activationHistory = [];
+        let allCodes = [];
 
-        async function loadHistory() {
+        // Load data on startup
+        async function loadData() {
             try {
-                const response = await fetch('/api/codes/list');
+                const response = await fetch('/api/admin/codes');
                 const data = await response.json();
                 
-                if (data.codes) {
-                    activationHistory = data.codes.map(code => ({
-                        id: code.id,
-                        clientName: code.client_name,
-                        clientPhone: code.client_phone,
-                        machineId: code.machine_id,
-                        notes: code.notes || '',
-                        code: code.activation_code,
-                        type: code.type,
-                        typeName: code.type === 'full' ? 'كامل (دائم)' : `تجريبي (${code.trial_days} أيام)`,
-                        date: new Date(code.created_at).toLocaleString('ar-DZ'),
-                        expiryDate: code.expiry_date ? new Date(code.expiry_date).toLocaleDateString('ar-DZ') : null
-                    }));
+                if (data.success) {
+                    allCodes = data.codes;
+                    updateStats();
+                    renderList();
                 }
-                
-                renderHistory();
             } catch (error) {
-                console.error('Error loading history:', error);
+                console.error('Load error:', error);
             }
         }
 
+        // Update statistics
+        function updateStats() {
+            const total = allCodes.length;
+            const trial = allCodes.filter(c => c.type === 'trial' && c.status === 'active').length;
+            const full = allCodes.filter(c => c.type === 'full' && c.status === 'active').length;
+            const active = allCodes.filter(c => c.online_status === 'online').length;
+
+            document.getElementById('statTotal').textContent = total;
+            document.getElementById('statTrial').textContent = trial;
+            document.getElementById('statFull').textContent = full;
+            document.getElementById('statActive').textContent = active;
+        }
+
+        // Generate Full Code
         async function generateFullCode() {
             const clientName = document.getElementById('clientName').value.trim();
             const clientPhone = document.getElementById('clientPhone').value.trim();
             const machineId = document.getElementById('machineId').value.trim();
             const notes = document.getElementById('notes').value.trim();
-            
+
             if (!clientName || !clientPhone || !machineId) {
                 alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
                 return;
@@ -474,29 +606,27 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    const code = data.code.activation_code;
-                    
-                    document.getElementById('codeOutput').textContent = code;
+                    document.getElementById('resultCode').textContent = data.code.activation_code;
                     document.getElementById('resultLabel').textContent = `✅ كود كامل (دائم) - ${clientName}`;
-                    document.getElementById('result').classList.add('show');
+                    document.getElementById('resultBox').classList.add('show');
                     
-                    await loadHistory();
                     clearForm();
+                    await loadData();
                 } else {
                     alert('❌ خطأ: ' + data.error);
                 }
             } catch (error) {
                 alert('❌ خطأ في الاتصال بالخادم');
-                console.error(error);
             }
         }
 
+        // Generate Trial Code
         async function generateTrialCode(days) {
             const clientName = document.getElementById('clientName').value.trim();
             const clientPhone = document.getElementById('clientPhone').value.trim();
             const machineId = document.getElementById('machineId').value.trim();
             const notes = document.getElementById('notes').value.trim();
-            
+
             if (!clientName || !clientPhone || !machineId) {
                 alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
                 return;
@@ -519,23 +649,21 @@
                 const data = await response.json();
                 
                 if (data.success) {
-                    const code = data.code.activation_code;
-                    
-                    document.getElementById('codeOutput').textContent = code;
+                    document.getElementById('resultCode').textContent = data.code.activation_code;
                     document.getElementById('resultLabel').textContent = `✅ كود تجريبي (${days} أيام) - ${clientName}`;
-                    document.getElementById('result').classList.add('show');
+                    document.getElementById('resultBox').classList.add('show');
                     
-                    await loadHistory();
                     clearForm();
+                    await loadData();
                 } else {
                     alert('❌ خطأ: ' + data.error);
                 }
             } catch (error) {
                 alert('❌ خطأ في الاتصال بالخادم');
-                console.error(error);
             }
         }
 
+        // Clear form
         function clearForm() {
             document.getElementById('clientName').value = '';
             document.getElementById('clientPhone').value = '';
@@ -543,72 +671,134 @@
             document.getElementById('notes').value = '';
         }
 
+        // Copy code
         function copyCode() {
-            const code = document.getElementById('codeOutput').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                alert(`✅ تم نسخ الكود بنجاح!\n\n${code}`);
-            });
-        }
-
-        function renderHistory() {
-            const container = document.getElementById('historyList');
-            
-            if (activationHistory.length === 0) {
-                container.innerHTML = `
-                    <div class="empty-history">
-                        📭 لا توجد أكواد بعد<br>
-                        قم بتوليد أول كود للبدء!
-                    </div>
-                `;
-                return;
-            }
-            
-            container.innerHTML = activationHistory.map(item => `
-                <div class="history-item" data-search="${item.clientName.toLowerCase()} ${item.clientPhone} ${item.machineId}">
-                    <div class="history-item-header">
-                        <div class="history-client-name">${item.clientName}</div>
-                        <div class="history-type ${item.type === 'full' ? 'type-full' : 'type-trial'}">
-                            ${item.typeName}
-                        </div>
-                    </div>
-                    <div class="history-details">
-                        📱 ${item.clientPhone}<br>
-                        🖥️ ${item.machineId}<br>
-                        📅 ${item.date}
-                        ${item.expiryDate ? `<br>⏰ ينتهي: ${item.expiryDate}` : ''}
-                        ${item.notes ? `<br>📝 ${item.notes}` : ''}
-                    </div>
-                    <div class="history-code">${item.code}</div>
-                    <div class="history-actions">
-                        <button class="btn-small btn-copy-history" onclick="copyHistoryCode('${item.code}')">📋 نسخ</button>
-                        <button class="btn-small btn-delete" onclick="deleteHistoryItem(${item.id})">🗑️ حذف</button>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        function copyHistoryCode(code) {
+            const code = document.getElementById('resultCode').textContent;
             navigator.clipboard.writeText(code).then(() => {
                 alert(`✅ تم نسخ الكود!\n\n${code}`);
             });
         }
 
-        async function deleteHistoryItem(id) {
-            if (!confirm('⚠️ هل أنت متأكد من حذف هذا الكود؟')) return;
+        // Render list
+        function renderList() {
+            const container = document.getElementById('listContainer');
             
+            if (allCodes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        📭 لا توجد تفعيلات بعد<br>
+                        قم بتوليد أول كود للبدء!
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = allCodes.map(code => {
+                const statusBadge = code.status === 'active' 
+                    ? `<span class="badge badge-active">نشط</span>` 
+                    : `<span class="badge badge-inactive">موقوف</span>`;
+                
+                const onlineBadge = code.online_status === 'online'
+                    ? `<span class="badge badge-online">🟢 متصل الآن</span>`
+                    : code.online_status === 'offline'
+                    ? `<span class="badge badge-offline">🟠 غير متصل</span>`
+                    : '';
+
+                const typeBadge = code.type === 'full' 
+                    ? `<span class="badge badge-full">💎 كامل</span>`
+                    : `<span class="badge badge-trial">⏰ ${code.trial_days} أيام</span>`;
+
+                return `
+                    <div class="list-item" data-search="${code.client_name.toLowerCase()} ${code.client_phone} ${code.machine_id}">
+                        <div class="item-header">
+                            <div class="item-name">${code.client_name}</div>
+                            <div style="display: flex; gap: 5px;">
+                                ${typeBadge}
+                                ${statusBadge}
+                                ${onlineBadge}
+                            </div>
+                        </div>
+                        <div class="item-details">
+                            📱 ${code.client_phone}<br>
+                            🖥️ ${code.machine_id} ${code.computer_name ? `(${code.computer_name})` : ''}<br>
+                            📅 ${new Date(code.created_at).toLocaleString('ar-DZ')}
+                            ${code.last_seen ? `<br>🕐 آخر نشاط: ${new Date(code.last_seen).toLocaleString('ar-DZ')}` : ''}
+                            ${code.notes ? `<br>📝 ${code.notes}` : ''}
+                        </div>
+                        <div class="item-code">${code.activation_code}</div>
+                        <div class="item-actions">
+                            <button class="btn btn-small btn-info" onclick="copyText('${code.activation_code}')">📋 نسخ</button>
+                            ${code.status === 'active' 
+                                ? `<button class="btn btn-small btn-warning" onclick="deactivateCode(${code.id})">🔒 إيقاف</button>`
+                                : `<button class="btn btn-small btn-success" onclick="reactivateCode(${code.id})">🔓 تفعيل</button>`
+                            }
+                            <button class="btn btn-small btn-danger" onclick="deleteCode(${code.id})">🗑️ حذف</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Copy text
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert(`✅ تم النسخ!\n\n${text}`);
+            });
+        }
+
+        // Deactivate code
+        async function deactivateCode(id) {
+            if (!confirm('⚠️ هل تريد إيقاف هذا التفعيل؟\n\nسيتم إيقاف البرنامج على جهاز العميل!')) return;
+
             try {
-                await fetch(`/api/codes/delete?id=${id}`, { method: 'DELETE' });
-                await loadHistory();
-                alert('✅ تم الحذف بنجاح!');
+                await fetch('/api/admin/codes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'deactivate', id, admin: 'Admin' })
+                });
+
+                alert('✅ تم إيقاف التفعيل!');
+                await loadData();
             } catch (error) {
-                alert('❌ خطأ في الحذف');
-                console.error(error);
+                alert('❌ خطأ في الإيقاف');
             }
         }
 
-        function filterHistory() {
-            const search = document.getElementById('searchHistory').value.toLowerCase();
-            const items = document.querySelectorAll('.history-item');
+        // Reactivate code
+        async function reactivateCode(id) {
+            if (!confirm('هل تريد إعادة تفعيل هذا الكود؟')) return;
+
+            try {
+                await fetch('/api/admin/codes', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'reactivate', id, admin: 'Admin' })
+                });
+
+                alert('✅ تم إعادة التفعيل!');
+                await loadData();
+            } catch (error) {
+                alert('❌ خطأ في التفعيل');
+            }
+        }
+
+        // Delete code
+        async function deleteCode(id) {
+            if (!confirm('⚠️ هل تريد حذف هذا الكود نهائياً؟')) return;
+
+            try {
+                await fetch(`/api/codes/delete?id=${id}`, { method: 'DELETE' });
+                alert('✅ تم الحذف!');
+                await loadData();
+            } catch (error) {
+                alert('❌ خطأ في الحذف');
+            }
+        }
+
+        // Filter list
+        function filterList() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const items = document.querySelectorAll('.list-item');
             
             items.forEach(item => {
                 const searchData = item.getAttribute('data-search');
@@ -616,36 +806,49 @@
             });
         }
 
-        async function exportHistory() {
-            if (activationHistory.length === 0) {
+        // Export CSV
+        function exportCSV() {
+            if (allCodes.length === 0) {
                 alert('⚠️ لا توجد بيانات للتصدير!');
                 return;
             }
-            
+
             const csv = [
-                ['الاسم', 'الهاتف', 'Machine ID', 'النوع', 'الكود', 'التاريخ', 'الانتهاء', 'ملاحظات'].join(','),
-                ...activationHistory.map(item => [
-                    item.clientName,
-                    item.clientPhone,
-                    item.machineId,
-                    item.typeName,
-                    item.code,
-                    item.date,
-                    item.expiryDate || '-',
-                    item.notes || '-'
+                ['الاسم', 'الهاتف', 'Machine ID', 'النوع', 'الكود', 'الحالة', 'التاريخ', 'آخر نشاط'].join(','),
+                ...allCodes.map(c => [
+                    c.client_name,
+                    c.client_phone,
+                    c.machine_id,
+                    c.type === 'full' ? 'كامل' : `تجريبي ${c.trial_days} أيام`,
+                    c.activation_code,
+                    c.status === 'active' ? 'نشط' : 'موقوف',
+                    new Date(c.created_at).toLocaleDateString('ar-DZ'),
+                    c.last_seen ? new Date(c.last_seen).toLocaleString('ar-DZ') : '-'
                 ].join(','))
             ].join('\n');
-            
+
             const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = `activation_history_${new Date().toISOString().split('T')[0]}.csv`;
+            link.download = `activations_${new Date().toISOString().split('T')[0]}.csv`;
             link.click();
-            
-            alert('✅ تم تصدير السجل بنجاح!');
+
+            alert('✅ تم التصدير!');
         }
 
-        loadHistory();
+        // Logout
+        function logout() {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
+                localStorage.removeItem('isAuthenticated');
+                window.location.href = '/login';
+            }
+        }
+
+        // Auto refresh every 30 seconds
+        setInterval(loadData, 30000);
+
+        // Load on start
+        loadData();
     </script>
 </body>
 </html>
