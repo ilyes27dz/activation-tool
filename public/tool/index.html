@@ -13,7 +13,6 @@
             padding: 20px;
         }
         
-        /* Header */
         .main-header {
             text-align: center;
             margin-bottom: 30px;
@@ -42,7 +41,6 @@
             font-size: 14px;
         }
         
-        /* Container Grid */
         .grid-container {
             display: grid;
             grid-template-columns: 1fr;
@@ -63,7 +61,6 @@
             }
         }
         
-        /* Cards */
         .card {
             background: rgba(18, 30, 40, 0.95);
             border-radius: 15px;
@@ -82,7 +79,6 @@
             gap: 10px;
         }
         
-        /* Info Box */
         .info-box {
             background: rgba(33, 150, 243, 0.1);
             border: 2px solid rgba(33, 150, 243, 0.3);
@@ -94,7 +90,6 @@
             line-height: 1.6;
         }
         
-        /* Form */
         .input-group {
             margin-bottom: 15px;
         }
@@ -127,7 +122,6 @@
             font-family: 'Segoe UI', sans-serif;
         }
         
-        /* Buttons */
         .button-group {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -162,7 +156,6 @@
             transform: translateY(-2px);
         }
         
-        /* Result */
         .result {
             display: none;
             margin-top: 20px;
@@ -207,7 +200,6 @@
             background: #1976D2;
         }
         
-        /* History */
         .history-header {
             display: flex;
             justify-content: space-between;
@@ -318,7 +310,6 @@
             font-size: 14px;
         }
         
-        /* Footer */
         .footer {
             text-align: center;
             color: #78909C;
@@ -326,7 +317,6 @@
             margin-top: 30px;
         }
         
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -342,7 +332,6 @@
             background: rgba(255, 152, 0, 0.7);
         }
         
-        /* Mobile Optimization */
         @media (max-width: 600px) {
             body { padding: 10px; }
             .card { padding: 15px; }
@@ -353,16 +342,13 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
     <div class="main-header">
         <div class="logo">🛒</div>
         <h1>أداة توليد أكواد التفعيل</h1>
-        <div class="subtitle">HANOUTY DZ - نسخة 2.0 مع Historique</div>
+        <div class="subtitle">HANOUTY DZ - نسخة احترافية مع API</div>
     </div>
 
-    <!-- Grid Container -->
     <div class="grid-container">
-        <!-- Left: Generator Card -->
         <div class="card">
             <div class="card-title">🔑 توليد كود جديد</div>
             
@@ -373,7 +359,6 @@
                 3️⃣ انسخ الكود وأرسله عبر WhatsApp
             </div>
 
-            <!-- Form -->
             <div class="input-group">
                 <label for="clientName">👤 اسم الزبون *</label>
                 <input type="text" id="clientName" placeholder="مثال: محمد أحمد">
@@ -394,7 +379,6 @@
                 <textarea id="notes" placeholder="أي معلومات إضافية..."></textarea>
             </div>
 
-            <!-- Buttons -->
             <div class="button-group">
                 <button class="btn-generate" onclick="generateFullCode()">
                     💎 كود كامل (دائم)
@@ -405,7 +389,6 @@
                 <button class="btn-trial" onclick="generateTrialCode(30)">⏰ 30 يوم</button>
             </div>
 
-            <!-- Result -->
             <div class="result" id="result">
                 <div class="result-label" id="resultLabel">✅ تم التوليد بنجاح!</div>
                 <div class="code-output" id="codeOutput"></div>
@@ -413,14 +396,13 @@
             </div>
         </div>
 
-        <!-- Right: History Card -->
         <div class="card">
             <div class="history-header">
                 <div class="card-title">📚 سجل الأكواد</div>
                 <div class="search-box">
                     <input type="text" id="searchHistory" placeholder="🔍 بحث..." onkeyup="filterHistory()">
                 </div>
-                <button class="export-btn" onclick="exportHistory()">📥 تصدير</button>
+                <button class="export-btn" onclick="exportHistory()">📥 تصدير CSV</button>
             </div>
 
             <div class="history-list" id="historyList">
@@ -432,28 +414,37 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
-        © 2025 HANOUTY DZ - أداة خاصة للمطور فقط | لا تشارك هذه الأداة مع أحد!
+        © 2025 HANOUTY DZ - أداة خاصة للمطور | محفوظة في قاعدة البيانات
     </div>
 
     <script>
-        // ✅ Load History from localStorage
-        let activationHistory = JSON.parse(localStorage.getItem('activationHistory') || '[]');
+        let activationHistory = [];
 
-        // ✅ توليد كود النسخة الكاملة
-        async function generateActivationKey(machineId) {
-            const SECRET_KEY = "HANOUTY_DZ_2025_SECRET_KEY_DO_NOT_SHARE";
-            const combined = `${machineId}-${SECRET_KEY}`;
-            
-            const encoder = new TextEncoder();
-            const data = encoder.encode(combined);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            const activationCode = hashHex.substring(0, 16).toUpperCase();
-            
-            return `HK-${activationCode.substring(0, 4)}-${activationCode.substring(4, 8)}-${activationCode.substring(8, 12)}-${activationCode.substring(12, 16)}`;
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/codes/list');
+                const data = await response.json();
+                
+                if (data.codes) {
+                    activationHistory = data.codes.map(code => ({
+                        id: code.id,
+                        clientName: code.client_name,
+                        clientPhone: code.client_phone,
+                        machineId: code.machine_id,
+                        notes: code.notes || '',
+                        code: code.activation_code,
+                        type: code.type,
+                        typeName: code.type === 'full' ? 'كامل (دائم)' : `تجريبي (${code.trial_days} أيام)`,
+                        date: new Date(code.created_at).toLocaleString('ar-DZ'),
+                        expiryDate: code.expiry_date ? new Date(code.expiry_date).toLocaleDateString('ar-DZ') : null
+                    }));
+                }
+                
+                renderHistory();
+            } catch (error) {
+                console.error('Error loading history:', error);
+            }
         }
 
         async function generateFullCode() {
@@ -466,40 +457,40 @@
                 alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
                 return;
             }
-            
-            const code = await generateActivationKey(machineId);
-            const now = new Date();
-            
-            // Save to history
-            const historyItem = {
-                id: Date.now(),
-                clientName,
-                clientPhone,
-                machineId,
-                notes,
-                code,
-                type: 'full',
-                typeName: 'كامل (دائم)',
-                date: now.toLocaleString('ar-DZ'),
-                expiryDate: null
-            };
-            
-            activationHistory.unshift(historyItem);
-            localStorage.setItem('activationHistory', JSON.stringify(activationHistory));
-            
-            // Show result
-            document.getElementById('codeOutput').textContent = code;
-            document.getElementById('resultLabel').textContent = `✅ كود كامل (دائم) - ${clientName}`;
-            document.getElementById('result').classList.add('show');
-            
-            // Refresh history
-            renderHistory();
-            
-            // Clear form
-            clearForm();
+
+            try {
+                const response = await fetch('/api/codes/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        clientName,
+                        clientPhone,
+                        machineId,
+                        type: 'full',
+                        notes
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    const code = data.code.activation_code;
+                    
+                    document.getElementById('codeOutput').textContent = code;
+                    document.getElementById('resultLabel').textContent = `✅ كود كامل (دائم) - ${clientName}`;
+                    document.getElementById('result').classList.add('show');
+                    
+                    await loadHistory();
+                    clearForm();
+                } else {
+                    alert('❌ خطأ: ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ خطأ في الاتصال بالخادم');
+                console.error(error);
+            }
         }
 
-        // ✅ توليد كود تجريبي
         async function generateTrialCode(days) {
             const clientName = document.getElementById('clientName').value.trim();
             const clientPhone = document.getElementById('clientPhone').value.trim();
@@ -510,49 +501,39 @@
                 alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
                 return;
             }
-            
-            const SECRET_KEY = "TRIAL_KEY_2025_HANOUTY";
-            const combined = `${machineId}-${days}-${SECRET_KEY}`;
-            
-            const encoder = new TextEncoder();
-            const data = encoder.encode(combined);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            const trialCode = hashHex.substring(0, 12).toUpperCase();
-            
-            const code = `HT-${days}D-${trialCode.substring(0, 4)}-${trialCode.substring(4, 8)}-${trialCode.substring(8, 12)}`;
-            
-            const now = new Date();
-            const expiryDate = new Date(now.getTime() + (days * 24 * 60 * 60 * 1000));
-            
-            // Save to history
-            const historyItem = {
-                id: Date.now(),
-                clientName,
-                clientPhone,
-                machineId,
-                notes,
-                code,
-                type: 'trial',
-                typeName: `تجريبي (${days} أيام)`,
-                date: now.toLocaleString('ar-DZ'),
-                expiryDate: expiryDate.toLocaleDateString('ar-DZ')
-            };
-            
-            activationHistory.unshift(historyItem);
-            localStorage.setItem('activationHistory', JSON.stringify(activationHistory));
-            
-            // Show result
-            document.getElementById('codeOutput').textContent = code;
-            document.getElementById('resultLabel').textContent = `✅ كود تجريبي (${days} أيام) - ${clientName}`;
-            document.getElementById('result').classList.add('show');
-            
-            // Refresh history
-            renderHistory();
-            
-            // Clear form
-            clearForm();
+
+            try {
+                const response = await fetch('/api/codes/create', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        clientName,
+                        clientPhone,
+                        machineId,
+                        type: 'trial',
+                        trialDays: days,
+                        notes
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    const code = data.code.activation_code;
+                    
+                    document.getElementById('codeOutput').textContent = code;
+                    document.getElementById('resultLabel').textContent = `✅ كود تجريبي (${days} أيام) - ${clientName}`;
+                    document.getElementById('result').classList.add('show');
+                    
+                    await loadHistory();
+                    clearForm();
+                } else {
+                    alert('❌ خطأ: ' + data.error);
+                }
+            } catch (error) {
+                alert('❌ خطأ في الاتصال بالخادم');
+                console.error(error);
+            }
         }
 
         function clearForm() {
@@ -569,7 +550,6 @@
             });
         }
 
-        // ✅ Render History
         function renderHistory() {
             const container = document.getElementById('historyList');
             
@@ -613,12 +593,17 @@
             });
         }
 
-        function deleteHistoryItem(id) {
+        async function deleteHistoryItem(id) {
             if (!confirm('⚠️ هل أنت متأكد من حذف هذا الكود؟')) return;
             
-            activationHistory = activationHistory.filter(item => item.id !== id);
-            localStorage.setItem('activationHistory', JSON.stringify(activationHistory));
-            renderHistory();
+            try {
+                await fetch(`/api/codes/delete?id=${id}`, { method: 'DELETE' });
+                await loadHistory();
+                alert('✅ تم الحذف بنجاح!');
+            } catch (error) {
+                alert('❌ خطأ في الحذف');
+                console.error(error);
+            }
         }
 
         function filterHistory() {
@@ -631,7 +616,7 @@
             });
         }
 
-        function exportHistory() {
+        async function exportHistory() {
             if (activationHistory.length === 0) {
                 alert('⚠️ لا توجد بيانات للتصدير!');
                 return;
@@ -660,8 +645,7 @@
             alert('✅ تم تصدير السجل بنجاح!');
         }
 
-        // ✅ Initialize
-        renderHistory();
+        loadHistory();
     </script>
 </body>
 </html>
