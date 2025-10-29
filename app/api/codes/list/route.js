@@ -1,37 +1,24 @@
 import { NextResponse } from 'next/server';
-import { query } from '@/lib/db';
+import { sql } from '@/lib/db';
 
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const filter = searchParams.get('filter') || 'all';
 
-    let queryText = 'SELECT * FROM activation_codes';
+    let result;
     
     if (filter === 'used') {
-      queryText += ' WHERE is_used = true';
+      result = await sql`SELECT * FROM activation_codes WHERE is_used = true ORDER BY created_at DESC`;
     } else if (filter === 'unused') {
-      queryText += ' WHERE is_used = false';
-    } else if (filter === 'trial') {
-      queryText += " WHERE type = 'trial'";
-    } else if (filter === 'full') {
-      queryText += " WHERE type = 'full'";
+      result = await sql`SELECT * FROM activation_codes WHERE is_used = false ORDER BY created_at DESC`;
+    } else {
+      result = await sql`SELECT * FROM activation_codes ORDER BY created_at DESC`;
     }
-    
-    queryText += ' ORDER BY created_at DESC';
 
-    const result = await query(queryText);
-
-    return NextResponse.json({ 
-      success: true,
-      codes: result.rows,
-      count: result.rows.length
-    });
+    return NextResponse.json({ codes: result.rows });
   } catch (error) {
     console.error('List codes error:', error);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

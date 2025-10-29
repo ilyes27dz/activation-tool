@@ -1,16 +1,12 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { query } from '@/lib/db';
+import { sql } from '@/lib/db';
 
 export async function POST(request) {
   try {
     const { username, password } = await request.json();
 
-    // البحث عن المستخدم
-    const result = await query(
-      'SELECT * FROM users WHERE username = $1',
-      [username]
-    );
+    const result = await sql`SELECT * FROM users WHERE username = ${username}`;
 
     if (result.rows.length === 0) {
       return NextResponse.json(
@@ -20,8 +16,6 @@ export async function POST(request) {
     }
 
     const user = result.rows[0];
-    
-    // التحقق من كلمة المرور
     const isValid = await bcrypt.compare(password, user.password_hash);
 
     if (!isValid) {
@@ -33,10 +27,7 @@ export async function POST(request) {
 
     return NextResponse.json({ 
       success: true, 
-      user: { 
-        id: user.id, 
-        username: user.username 
-      } 
+      user: { id: user.id, username: user.username } 
     });
   } catch (error) {
     console.error('Login error:', error);
