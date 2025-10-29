@@ -33,61 +33,150 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
-      <div className="bg-gray-800 p-8 rounded-2xl shadow-2xl border-2 border-orange-500 max-w-md w-full">
-        <div className="text-center mb-8">
-          <div className="text-6xl mb-4">🔑</div>
-          <h1 className="text-3xl font-bold text-orange-400 mb-2">أداة التفعيل</h1>
-          <p className="text-gray-400">HANOUTY DZ</p>
+    <div style={styles.container}>
+      <div style={styles.card}>
+        <div style={styles.header}>
+          <div style={styles.logo}>🔑</div>
+          <h1 style={styles.title}>أداة التفعيل</h1>
+          <p style={styles.subtitle}>HANOUTY DZ</p>
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-orange-400 text-sm font-bold mb-2">
-              اسم المستخدم
-            </label>
+        <form onSubmit={handleLogin} style={styles.form}>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>اسم المستخدم</label>
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-700 border-2 border-orange-500/30 rounded-lg text-white focus:border-orange-500 focus:outline-none"
+              style={styles.input}
               placeholder="admin"
               required
             />
           </div>
 
-          <div>
-            <label className="block text-orange-400 text-sm font-bold mb-2">
-              كلمة المرور
-            </label>
+          <div style={styles.inputGroup}>
+            <label style={styles.label}>كلمة المرور</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-700 border-2 border-orange-500/30 rounded-lg text-white focus:border-orange-500 focus:outline-none"
+              style={styles.input}
               placeholder="••••••••"
               required
             />
           </div>
 
           {error && (
-            <div className="bg-red-500/20 border border-red-500 text-red-400 px-4 py-2 rounded-lg text-sm">
+            <div style={styles.error}>
               ⚠️ {error}
             </div>
           )}
 
-          <button
-            type="submit"
-            className="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 rounded-lg transition-all transform hover:scale-105"
-          >
+          <button type="submit" style={styles.button}>
             🔓 دخول
           </button>
         </form>
 
-        <p className="text-center text-gray-500 text-xs mt-6">
+        <p style={styles.footer}>
           © 2025 HANOUTY DZ - أداة خاصة
         </p>
       </div>
     </div>
   );
 }
+
+const styles = {
+  container: {
+    minHeight: '100vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '20px',
+  },
+  card: {
+    background: 'rgba(18, 30, 40, 0.95)',
+    borderRadius: '20px',
+    padding: '40px',
+    maxWidth: '400px',
+    width: '100%',
+    boxShadow: '0 8px 32px rgba(255, 152, 0, 0.3)',
+    border: '2px solid rgba(255, 152, 0, 0.3)',
+  },
+  header: {
+    textAlign: 'center',
+    marginBottom: '30px',
+  },
+  logo: {
+    width: '80px',
+    height: '80px',
+    margin: '0 auto 20px',
+    background: 'linear-gradient(135deg, #FF9800 0%, #FF6F00 100%)',
+    borderRadius: '20px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '45px',
+    boxShadow: '0 10px 25px rgba(255, 152, 0, 0.5)',
+  },
+  title: {
+    color: '#FFD54F',
+    fontSize: '24px',
+    fontWeight: 'bold',
+    marginBottom: '10px',
+  },
+  subtitle: {
+    color: '#B0BEC5',
+    fontSize: '14px',
+  },
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  inputGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  label: {
+    color: '#FFD54F',
+    fontSize: '14px',
+    fontWeight: 'bold',
+  },
+  input: {
+    width: '100%',
+    padding: '12px',
+    fontSize: '14px',
+    border: '2px solid rgba(255, 152, 0, 0.4)',
+    borderRadius: '8px',
+    background: 'rgba(255, 152, 0, 0.08)',
+    color: '#FFD54F',
+    outline: 'none',
+  },
+  button: {
+    width: '100%',
+    padding: '12px',
+    fontSize: '16px',
+    fontWeight: 'bold',
+    border: 'none',
+    borderRadius: '8px',
+    background: '#FF9800',
+    color: 'white',
+    cursor: 'pointer',
+    transition: 'all 0.3s',
+  },
+  error: {
+    background: 'rgba(244, 67, 54, 0.2)',
+    border: '1px solid #f44336',
+    color: '#ff5252',
+    padding: '12px',
+    borderRadius: '8px',
+    fontSize: '14px',
+  },
+  footer: {
+    textAlign: 'center',
+    color: '#78909C',
+    fontSize: '12px',
+    marginTop: '20px',
+  },
+};
