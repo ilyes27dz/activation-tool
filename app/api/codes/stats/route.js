@@ -1,36 +1,22 @@
-// app/api/codes/stats/route.js
-import { sql } from '@/lib/db';
 import { NextResponse } from 'next/server';
+import { query } from '@/lib/db';
 
 export async function GET() {
   try {
-    // إجمالي الأكواد
-    const total = await sql`SELECT COUNT(*) as count FROM activation_codes`;
-    
-    // الأكواد الكاملة
-    const full = await sql`SELECT COUNT(*) as count FROM activation_codes WHERE type = 'full'`;
-    
-    // الأكواد التجريبية
-    const trial = await sql`SELECT COUNT(*) as count FROM activation_codes WHERE type = 'trial'`;
-    
-    // الأكواد المستخدمة
-    const used = await sql`SELECT COUNT(*) as count FROM activation_codes WHERE is_used = true`;
+    const totalResult = await query('SELECT COUNT(*) FROM activation_codes');
+    const usedResult = await query('SELECT COUNT(*) FROM activation_codes WHERE is_used = true');
+    const trialResult = await query("SELECT COUNT(*) FROM activation_codes WHERE type = 'trial'");
+    const fullResult = await query("SELECT COUNT(*) FROM activation_codes WHERE type = 'full'");
 
     return NextResponse.json({
-      success: true,
-      stats: {
-        total: parseInt(total.rows[0].count),
-        full: parseInt(full.rows[0].count),
-        trial: parseInt(trial.rows[0].count),
-        used: parseInt(used.rows[0].count),
-      }
+      total: parseInt(totalResult.rows[0].count),
+      used: parseInt(usedResult.rows[0].count),
+      unused: parseInt(totalResult.rows[0].count) - parseInt(usedResult.rows[0].count),
+      trial: parseInt(trialResult.rows[0].count),
+      full: parseInt(fullResult.rows[0].count),
     });
-
   } catch (error) {
     console.error('Stats error:', error);
-    return NextResponse.json({ 
-      success: false, 
-      error: error.message 
-    }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

@@ -1,26 +1,41 @@
-
-// app/api/create-admin/route.js
-import { sql } from '@/lib/db';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import { query } from '@/lib/db';
 
 export async function GET() {
   try {
-    // كلمة المرور الافتراضية: admin123
-    const passwordHash = await bcrypt.hash('admin123', 10);
+    // التحقق من وجود مستخدم
+    const checkResult = await query('SELECT * FROM users WHERE username = $1', ['admin']);
 
-    await sql`
-      INSERT INTO users (username, password_hash)
-      VALUES ('admin', ${passwordHash})
-      ON CONFLICT (username) DO NOTHING
-    `;
+    if (checkResult.rows.length > 0) {
+      return NextResponse.json({
+        success: false,
+        message: 'Admin user already exists',
+      });
+    }
 
-    return NextResponse.json({ 
-      success: true, 
+    // إنشاء المستخدم
+    const password = 'admin123';
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await query(
+      'INSERT INTO users (username, password_hash) VALUES ($1, $2)',
+      ['admin', hashedPassword]
+    );
+
+    return NextResponse.json({
+      success: true,
       message: 'Admin user created',
-      credentials: { username: 'admin', password: 'admin123' }
+      credentials: {
+        username: 'admin',
+        password: 'admin123',
+      },
     });
   } catch (error) {
-    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+    console.error('Create admin error:', error);
+    return NextResponse.json(
+      { success: false, error: error.message },
+      { status: 500 }
+    );
   }
 }
