@@ -13,7 +13,6 @@
             min-height: 100vh;
         }
 
-        /* Header */
         .header {
             background: linear-gradient(135deg, #FF6B35 0%, #E55A2B 100%);
             color: white;
@@ -79,7 +78,6 @@
             color: #FF6B35;
         }
 
-        /* Stats Cards */
         .stats-container {
             max-width: 1400px;
             margin: 30px auto;
@@ -131,7 +129,6 @@
             font-weight: 600;
         }
 
-        /* Main Content */
         .main-content {
             max-width: 1400px;
             margin: 0 auto;
@@ -164,7 +161,6 @@
             gap: 10px;
         }
 
-        /* Form */
         .form-group {
             margin-bottom: 15px;
         }
@@ -240,7 +236,6 @@
             gap: 8px;
         }
 
-        /* Result Box */
         .result-box {
             display: none;
             margin-top: 20px;
@@ -289,7 +284,6 @@
             background: #1976D2;
         }
 
-        /* List */
         .list-header {
             display: flex;
             justify-content: space-between;
@@ -318,6 +312,9 @@
             color: white;
             padding: 10px 16px;
             font-size: 13px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
         }
 
         .btn-export:hover {
@@ -405,6 +402,8 @@
             padding: 6px 12px;
             font-size: 11px;
             border-radius: 6px;
+            border: none;
+            cursor: pointer;
         }
 
         .btn-info { background: #2196F3; color: white; }
@@ -438,7 +437,6 @@
     </style>
 </head>
 <body>
-    <!-- Header -->
     <div class="header">
         <div class="header-left">
             <div class="logo-box">🛒</div>
@@ -452,7 +450,6 @@
         </div>
     </div>
 
-    <!-- Stats -->
     <div class="stats-container">
         <div class="stat-card total">
             <div class="stat-header">
@@ -484,9 +481,7 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Generate Form -->
         <div class="card">
             <div class="card-title">🔑 توليد كود جديد</div>
             
@@ -529,7 +524,6 @@
             </div>
         </div>
 
-        <!-- List -->
         <div class="card">
             <div class="list-header">
                 <div class="card-title">📚 سجل التفعيلات</div>
@@ -549,13 +543,11 @@
 <script>
     let allCodes = [];
 
-    // Load data on startup
     async function loadData() {
         try {
             const response = await fetch('/api/admin/codes');
             const data = await response.json();
 
-            // تصحيح استخراج الأكواد من الـ API مهما كان شكلها
             if (data.success && Array.isArray(data.codes)) {
                 allCodes = data.codes;
             } else if (data.codes && Array.isArray(data.codes.rows)) {
@@ -573,7 +565,6 @@
         }
     }
 
-    // Update statistics
     function updateStats() {
         const total = allCodes.length;
         const trial = allCodes.filter(c => c.type === 'trial' && c.status === 'active').length;
@@ -586,56 +577,55 @@
         document.getElementById('statActive').textContent = active;
     }
 
-  async function generateFullCode() {
-    const clientName = document.getElementById('clientName').value.trim();
-    const clientPhone = document.getElementById('clientPhone').value.trim();
-    const machineId = document.getElementById('machineId').value.trim();
-    const notes = document.getElementById('notes').value.trim();
+    async function generateFullCode() {
+        const clientName = document.getElementById('clientName').value.trim();
+        const clientPhone = document.getElementById('clientPhone').value.trim();
+        const machineId = document.getElementById('machineId').value.trim();
+        const notes = document.getElementById('notes').value.trim();
 
-    if (!clientName || !clientPhone || !machineId) {
-        alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
-        return;
-    }
-
-    try {
-        const response = await fetch('/api/codes/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                clientName,
-                clientPhone,
-                machineId,
-                type: 'full',
-                notes
-            })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            alert('❌ خطأ في الخادم: ' + (data.error || response.statusText));
+        if (!clientName || !clientPhone || !machineId) {
+            alert('⚠️ يرجى ملء جميع الحقول المطلوبة!');
             return;
         }
 
-        if (data.success && data.code && data.code.activation_code) {
-            document.getElementById('resultCode').textContent = data.code.activation_code;
-            document.getElementById('resultLabel').textContent = `✅ كود كامل (دائم) - ${clientName}`;
-            document.getElementById('resultBox').classList.add('show');
+        try {
+            const response = await fetch('/api/codes/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    clientName,
+                    clientPhone,
+                    machineId,
+                    type: 'full',
+                    notes
+                })
+            });
 
-            clearForm();
-            await loadData();
-        } else {
-            alert('❌ خطأ: الكود لم يُنشأ بشكل صحيح');
-            console.error('Response data:', data);
+            const data = await response.json();
+            console.log('Full Code Response:', data);
+
+            if (!response.ok) {
+                alert('❌ خطأ في الخادم: ' + (data.error || response.statusText));
+                return;
+            }
+
+            if (data.success && data.code && data.code.activation_code) {
+                document.getElementById('resultCode').textContent = data.code.activation_code;
+                document.getElementById('resultLabel').textContent = `✅ كود كامل (دائم) - ${clientName}`;
+                document.getElementById('resultBox').classList.add('show');
+
+                clearForm();
+                await loadData();
+            } else {
+                alert('❌ خطأ: الكود لم يُنشأ بشكل صحيح');
+                console.error('Response data:', data);
+            }
+        } catch (error) {
+            console.error('Full code error:', error);
+            alert('❌ خطأ في الاتصال: ' + error.message);
         }
-    } catch (error) {
-        console.error('Full error:', error);
-        alert('❌ خطأ في الاتصال: ' + error.message);
     }
-}
 
-
-    // Generate Trial Code
     async function generateTrialCode(days) {
         const clientName = document.getElementById('clientName').value.trim();
         const clientPhone = document.getElementById('clientPhone').value.trim();
@@ -661,28 +651,31 @@
                 })
             });
 
-          const data = await response.json();
+            const data = await response.json();
+            console.log('Trial Code Response:', data);
 
-console.log('Response:', data); // للتشخيص
+            if (!response.ok) {
+                alert('❌ خطأ في الخادم: ' + (data.error || response.statusText));
+                return;
+            }
 
-if (data.success && data.code && data.code.activation_code) {
-    document.getElementById('resultCode').textContent = data.code.activation_code;
-document.getElementById('resultLabel').textContent = `✅ كود تجريبي (${days} أيام) - ${clientName}`;
-    document.getElementById('resultBox').classList.add('show');
-    
-    clearForm();
-    await loadData();
-} else {
-    alert('❌ خطأ: ' + (data.error || 'لم يتم إرجاع الكود بشكل صحيح'));
-    console.error('Data received:', data);
-}
-
+            if (data.success && data.code && data.code.activation_code) {
+                document.getElementById('resultCode').textContent = data.code.activation_code;
+                document.getElementById('resultLabel').textContent = `✅ كود تجريبي (${days} أيام) - ${clientName}`;
+                document.getElementById('resultBox').classList.add('show');
+                
+                clearForm();
+                await loadData();
+            } else {
+                alert('❌ خطأ: ' + (data.error || 'لم يتم إرجاع الكود بشكل صحيح'));
+                console.error('Data received:', data);
+            }
         } catch (error) {
-            alert('❌ خطأ في الاتصال بالخادم');
+            console.error('Trial code error:', error);
+            alert('❌ خطأ في الاتصال بالخادم: ' + error.message);
         }
     }
 
-    // Clear form
     function clearForm() {
         document.getElementById('clientName').value = '';
         document.getElementById('clientPhone').value = '';
@@ -690,15 +683,21 @@ document.getElementById('resultLabel').textContent = `✅ كود تجريبي ($
         document.getElementById('notes').value = '';
     }
 
-    // Copy code
     function copyCode() {
         const code = document.getElementById('resultCode').textContent;
         navigator.clipboard.writeText(code).then(() => {
             alert(`✅ تم نسخ الكود!\n\n${code}`);
+        }).catch(() => {
+            const textArea = document.createElement('textarea');
+            textArea.value = code;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+            alert(`✅ تم نسخ الكود!\n\n${code}`);
         });
     }
 
-    // Render list
     function renderList() {
         const container = document.getElementById('listContainer');
 
@@ -725,7 +724,7 @@ document.getElementById('resultLabel').textContent = `✅ كود تجريبي ($
 
             const typeBadge = code.type === 'full' 
                 ? `<span class="badge badge-full">💎 كامل</span>`
-                : `<span class="badge badge-trial">⏰ ${code.trial_days} أيام</span>`;
+                : `<span class="badge badge-trial">⏰ ${code.trial_days || 0} أيام</span>`;
 
             return `
                 <div class="list-item" data-search="${code.client_name.toLowerCase()} ${code.client_phone} ${code.machine_id}">
@@ -758,14 +757,12 @@ document.getElementById('resultLabel').textContent = `✅ كود تجريبي ($
         }).join('');
     }
 
-    // Copy text
     function copyText(text) {
         navigator.clipboard.writeText(text).then(() => {
             alert(`✅ تم النسخ!\n\n${text}`);
         });
     }
 
-    // Deactivate code
     async function deactivateCode(id) {
         if (!confirm('⚠️ هل تريد إيقاف هذا التفعيل؟\n\nسيتم إيقاف البرنامج على جهاز العميل!')) return;
 
@@ -783,7 +780,6 @@ document.getElementById('resultLabel').textContent = `✅ كود تجريبي ($
         }
     }
 
-    // Reactivate code
     async function reactivateCode(id) {
         if (!confirm('هل تريد إعادة تفعيل هذا الكود؟')) return;
 
@@ -801,7 +797,6 @@ document.getElementById('resultLabel').textContent = `✅ كود تجريبي ($
         }
     }
 
-    // Delete code
     async function deleteCode(id) {
         if (!confirm('⚠️ هل تريد حذف هذا الكود نهائياً؟')) return;
 
@@ -814,7 +809,6 @@ document.getElementById('resultLabel').textContent = `✅ كود تجريبي ($
         }
     }
 
-    // Filter list
     function filterList() {
         const search = document.getElementById('searchInput').value.toLowerCase();
         const items = document.querySelectorAll('.list-item');
@@ -825,7 +819,6 @@ document.getElementById('resultLabel').textContent = `✅ كود تجريبي ($
         });
     }
 
-    // Export CSV
     function exportCSV() {
         if (allCodes.length === 0) {
             alert('⚠️ لا توجد بيانات للتصدير!');
@@ -838,7 +831,7 @@ document.getElementById('resultLabel').textContent = `✅ كود تجريبي ($
                 c.client_name,
                 c.client_phone,
                 c.machine_id,
-                c.type === 'full' ? 'كامل' : `تجريبي ${c.trial_days} أيام`,
+                c.type === 'full' ? 'كامل' : `تجريبي ${c.trial_days || 0} أيام`,
                 c.activation_code,
                 c.status === 'active' ? 'نشط' : 'موقوف',
                 new Date(c.created_at).toLocaleDateString('ar-DZ'),
@@ -846,7 +839,7 @@ document.getElementById('resultLabel').textContent = `✅ كود تجريبي ($
             ].join(','))
         ].join('\n');
 
-        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset-utf-8;' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = `activations_${new Date().toISOString().split('T')[0]}.csv`;
@@ -855,7 +848,6 @@ document.getElementById('resultLabel').textContent = `✅ كود تجريبي ($
         alert('✅ تم التصدير!');
     }
 
-    // Logout
     function logout() {
         if (confirm('هل تريد تسجيل الخروج؟')) {
             localStorage.removeItem('isAuthenticated');
@@ -863,13 +855,8 @@ document.getElementById('resultLabel').textContent = `✅ كود تجريبي ($
         }
     }
 
-    // Auto refresh every 30 seconds
     setInterval(loadData, 30000);
-
-    // Load on start
     loadData();
 </script>
-
-    
 </body>
 </html>
